@@ -1,18 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.crater_windoze.movienight.MainActivity">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/activity_main"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:paddingBottom="@dimen/activity_vertical_margin"
+	android:paddingLeft="@dimen/activity_horizontal_margin"
+	android:paddingRight="@dimen/activity_horizontal_margin"
+	android:paddingTop="@dimen/activity_vertical_margin"
+	tools:context="com.example.crater_windoze.movienight.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"/>
+	<EditText
+		android:id="@+id/editText"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentStart="true"
+		android:layout_alignParentTop="true"
+		android:background="@drawable/search_box"
+		android:ems="10"
+		android:hint="Movie Name"
+		android:inputType="textPersonName"
+		android:padding="5dp" />
+
+	<HorizontalScrollView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/editText"
+		android:layout_centerHorizontal="true"
+		android:scrollbars="none">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal">
+
+			<CheckedTextView
+				android:id="@+id/allButton"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="3dp"
+				android:layout_weight="1"
+				android:checked="true"
+				android:background="@drawable/genre_button"
+				android:onClick="onClick"
+				android:text="@string/all_button_text"
+				android:textAllCaps="false"
+				android:textColor="@color/genre_button_text" />
+
+			<CheckedTextView
+				android:id="@+id/dramaButton"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="3dp"
+				android:layout_weight="1"
+				android:background="@drawable/genre_button"
+				android:checked="false"
+				android:onClick="onClick"
+				android:text="Drama"
+				android:textAllCaps="false"
+				android:textColor="@color/genre_button_text" />
+		</LinearLayout>
+	</HorizontalScrollView>
 </RelativeLayout>

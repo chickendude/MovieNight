@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Movie Night</string>
+    <string name="all_button_text">All</string>
 </resources>

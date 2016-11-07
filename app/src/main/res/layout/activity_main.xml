@@ -27,6 +27,7 @@
 		android:layout_height="wrap_content"
 		android:layout_below="@+id/editText"
 		android:layout_centerHorizontal="true"
+		android:id="@+id/genreScrollView"
 		android:scrollbars="none">
 
 		<LinearLayout
@@ -59,6 +60,12 @@
 				android:text="Drama"
 				android:textAllCaps="false"
 				android:textColor="@color/genre_button_text" />
+
 		</LinearLayout>
 	</HorizontalScrollView>
+	<android.support.v7.widget.RecyclerView
+		android:id="@+id/resultsRecyclerView"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_below="@id/genreScrollView"/>
 </RelativeLayout>

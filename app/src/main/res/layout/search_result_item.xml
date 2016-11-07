@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:background="@drawable/search_box"
+	android:layout_margin="4dp"
+	android:padding="10dp">
+
+	<ImageView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		app:srcCompat="@android:drawable/ic_menu_camera"
+		android:layout_alignParentTop="true"
+		android:layout_centerHorizontal="true"
+		android:id="@+id/posterImageView"/>
+
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/posterImageView"
+		android:layout_centerHorizontal="true"
+		android:textAlignment="center"
+		android:id="@+id/titleLabel"
+		tools:text="Movie Title"
+		android:textSize="18sp"/>
+</RelativeLayout>

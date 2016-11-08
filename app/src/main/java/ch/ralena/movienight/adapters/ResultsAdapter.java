@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,19 +21,24 @@ import ch.ralena.movienight.search.SearchResults;
 
 import static ch.ralena.movienight.search.SearchResult.IMAGE_URL_BASE;
 
-/**
- * Created by crater-windoze on 11/7/2016.
- */
-
 public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsViewHolder> {
 	// TODO: Implement caching
 
 	final static String TAG = ResultsAdapter.class.getSimpleName();
-
+	private LruCache<String, Bitmap> mBitmapCache;
 	private SearchResults mSearchResults;
 
 	public ResultsAdapter(SearchResults searchResults) {
 		mSearchResults = searchResults;
+		// set up our cache, first get max memory available
+		final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+		final int cacheSize = maxMemory / 8;
+		mBitmapCache = new LruCache<String, Bitmap>(cacheSize) {
+			@Override
+			protected int sizeOf(String key, Bitmap bitmap) {
+				return bitmap.getByteCount() / 1024;
+			}
+		};
 	}
 
 	@Override
@@ -46,13 +52,12 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 
 	@Override
 	public void onBindViewHolder(ResultsViewHolder holder, int position) {
-		holder.bindResults(mSearchResults.getSearchResults().get(position));
+		holder.bindResults(mSearchResults.getSearchResults().get(position), position);
 	}
 
 	@Override
 	public int getItemCount() {
 		int size = mSearchResults.getSearchResults().size();
-		Log.d(TAG, size + " is the current size ======================");
 		return size;
 	}
 
@@ -69,13 +74,20 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 			itemView.setOnClickListener(this);
 		}
 
-		public void bindResults(SearchResult result) {
+		public void bindResults(SearchResult result, int position) {
+			Log.d(TAG,"Binding position "+position);
 			if (mDownloadPosterTask != null) {
 				mDownloadPosterTask.cancel(true);
 			}
-			mPosterImageView.setImageResource(android.R.drawable.presence_invisible);
-			String url = IMAGE_URL_BASE + "185" + result.getPosterPath();
-			mDownloadPosterTask = new DownloadPosterTask(mPosterImageView).execute(url);
+			Bitmap bitmap = mBitmapCache.get(position + "");
+			Log.d(TAG,String.valueOf(bitmap));
+			if (bitmap != null) {
+				mPosterImageView.setImageBitmap(bitmap);
+			} else {
+				mPosterImageView.setImageResource(android.R.drawable.presence_invisible);
+				String url = IMAGE_URL_BASE + "342" + result.getPosterPath();
+				mDownloadPosterTask = new DownloadPosterTask(mPosterImageView, position).execute(url);
+			}
 			mTitleLabel.setText(result.getTitle());
 		}
 
@@ -87,10 +99,18 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 		}
 	}
 
+	private void addBitmapToCache(String key, Bitmap bitmap) {
+		if (mBitmapCache.get(key) == null) {
+			mBitmapCache.put(key, bitmap);
+		}
+	}
+
 	private class DownloadPosterTask extends AsyncTask<String, Void, Bitmap> {
 		ImageView mPosterImageView;
+		int mPosition;
 
-		public DownloadPosterTask(ImageView posterImageView) {
+		public DownloadPosterTask(ImageView posterImageView, int position) {
+			mPosition = position;
 			mPosterImageView = posterImageView;
 		}
 
@@ -107,6 +127,7 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 				InputStream input = new java.net.URL(url).openStream();
 				poster = BitmapFactory.decodeStream(input);
 			} catch (IOException e) {
+				Log.e(TAG, "THERE WAS AN ERROR WITH THE WEB STUFF");
 				e.printStackTrace();
 			}
 			return poster;
@@ -114,6 +135,7 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 
 		@Override
 		protected void onPostExecute(Bitmap result) {
+			addBitmapToCache(mPosition + "", result);
 			mPosterImageView.setImageBitmap(result);
 		}
 	}

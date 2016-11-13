@@ -128,4 +128,12 @@ public class SearchResult {
 	public void setVoteAverage(double voteAverage) {
 		mVoteAverage = voteAverage;
 	}
+
+	@Override
+	public String toString() {
+		return "SearchResult{" +
+				"mTitle='" + mTitle + '\'' +
+				", mReleaseDate=" + mReleaseDate +
+				'}';
+	}
 }

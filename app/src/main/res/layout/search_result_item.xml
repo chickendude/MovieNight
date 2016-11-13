@@ -12,9 +12,14 @@
 		android:layout_height="wrap_content"
 		android:layout_centerInParent="true"
 		android:layout_margin="4dp"
-		android:background="@drawable/movie_title_border"
 		android:gravity="center_horizontal"
 		android:orientation="vertical">
+
+		<ProgressBar
+			style="?android:attr/progressBarStyleSmall"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/posterLoadingIcon"/>
 
 		<ImageView
 			android:id="@+id/posterImageView"
@@ -27,6 +32,7 @@
 			android:id="@+id/titleLabel"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:background="@drawable/movie_title_border"
 			android:width="342px"
 			android:textAlignment="center"
 			android:textSize="18sp"

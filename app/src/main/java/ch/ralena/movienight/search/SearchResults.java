@@ -45,4 +45,14 @@ public class SearchResults {
 	public List<SearchResult> getSearchResults() {
 		return mSearchResults;
 	}
+
+	@Override
+	public String toString() {
+		return "SearchResults{" +
+				"mCurPage=" + mCurPage +
+				", mNumPages=" + mNumPages +
+				", mTotalResults=" + mTotalResults +
+				", mSearchResults=" + mSearchResults +
+				'}';
+	}
 }

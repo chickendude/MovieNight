@@ -31,20 +31,28 @@ public class MainActivity extends AppCompatActivity {
 
 	private String mResults;
 	private SearchResults mSearchResults;
+	ResultsAdapter mAdapter;
+
+	private boolean mCanLoadNewMovies;
 
 	private RecyclerView mRecyclerView;
+	private GridLayoutManager mGridLayoutManager;
 
 	// API stuff
 	public static final String API_URL = "https://api.themoviedb.org/3/";
 	public static final String API_KEY = "e924bfb7ddb531cb8116f491052edfdd";
-	private static final OkHttpClient client = new OkHttpClient();
+	public static final OkHttpClient client = new OkHttpClient();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		mRecyclerView = (RecyclerView) findViewById(R.id.resultsRecyclerView);
-		getMovie("550");
+		mGridLayoutManager = new GridLayoutManager(MainActivity.this, 2);
+		mRecyclerView.setLayoutManager(mGridLayoutManager);
+		mRecyclerView.setHasFixedSize(true);
+		mCanLoadNewMovies = true;
+		getMovie();
 	}
 
 	// toggle button state for the CheckedTextView buttons
@@ -53,11 +61,18 @@ public class MainActivity extends AppCompatActivity {
 		button.setChecked(!button.isChecked());
 	}
 
-	public void getMovie(String movieId) {
-		if(isNetworkAvailable()) {
-			Log.d(TAG, API_URL + "discover/movie/?api_key=" + API_KEY);
+	// default just pulls page one
+	public void getMovie() {
+		getMovie(1);
+	}
+
+	public void getMovie(int page) {
+		if (isNetworkAvailable()) {
+
+			String url = API_URL + "discover/movie/?api_key=" + API_KEY + "&page=" + page;
+			Log.d(TAG, url);
 			Request request = new Request.Builder()
-					.url(API_URL + "discover/movie/?api_key=" + API_KEY)
+					.url(url)
 					.build();
 			client.newCall(request).enqueue(new Callback() {
 				@Override
@@ -91,28 +106,49 @@ public class MainActivity extends AppCompatActivity {
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				ResultsAdapter adapter = new ResultsAdapter(mSearchResults);
-				mRecyclerView.setAdapter(adapter);
-				RecyclerView.LayoutManager layoutManager = new GridLayoutManager(MainActivity.this, 2);
-				mRecyclerView.setLayoutManager(layoutManager);
-				mRecyclerView.setHasFixedSize(true);
+//				mRecyclerView.setAdapter(mAdapter);
+//				mGridLayoutManager = new GridLayoutManager(MainActivity.this, 2);
+//				mRecyclerView.setLayoutManager(mGridLayoutManager);
+//				mRecyclerView.setHasFixedSize(true);
+				mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+					@Override
+					public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+						super.onScrolled(recyclerView, dx, dy);
+
+						if (mCanLoadNewMovies) {
+							if (dy > 0) //check for scroll down
+							{
+								int visibleItemCount = mGridLayoutManager.getChildCount();
+								int totalItemCount = mGridLayoutManager.getItemCount();
+								int pastVisiblesItems = mGridLayoutManager.findFirstVisibleItemPosition();
+
+								if ((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
+									mCanLoadNewMovies = false;
+									Log.v(TAG, "Load new movies");
+									getMovie(mSearchResults.getCurPage()+1);
+								}
+							}
+						}
+
+					}
+				});
 			}
 		});
 	}
 
 	private void unpackResults(String results) throws JSONException {
-		mSearchResults = new SearchResults();
 		JSONObject jsonObject = new JSONObject(results);
 		JSONArray jsonArray = jsonObject.getJSONArray("results");
 
 		int curPage = jsonObject.getInt("page");
 		int totalResults = jsonObject.getInt("total_results");
 		int totalPages = jsonObject.getInt("total_pages");
+		mSearchResults = new SearchResults();
 		mSearchResults.setCurPage(curPage);
 		mSearchResults.setNumPages(totalPages);
 		mSearchResults.setTotalResults(totalResults);
 
-		for(int i = 0; i < jsonArray.length(); i++) {
+		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject movie = jsonArray.getJSONObject(i);
 			String posterPath = movie.getString("poster_path");
 			String title = movie.getString("title");
@@ -125,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
 			// pull out the genre ids
 			JSONArray genre_ids = movie.getJSONArray("genre_ids");
 			int[] genreIds = new int[genre_ids.length()];
-			for(int j = 0; j < genre_ids.length(); j++) {
+			for (int j = 0; j < genre_ids.length(); j++) {
 				genreIds[j] = genre_ids.getInt(j);
 			}
 			// continue parsing rest of data
@@ -146,6 +182,19 @@ public class MainActivity extends AppCompatActivity {
 
 			mSearchResults.addSearchResult(result);
 		}
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (mAdapter != null) {
+					mAdapter.addAll(mSearchResults.getSearchResults());
+					mAdapter.notifyDataSetChanged();
+				} else {
+					mAdapter = new ResultsAdapter(mSearchResults.getSearchResults(),MainActivity.this);
+					mRecyclerView.setAdapter(mAdapter);
+				}
+			}
+		});
+		Log.d(TAG,mSearchResults.toString());
 	}
 
 	private boolean isNetworkAvailable() {

@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
 							mResults = response.body().string();
 							Log.d(TAG, mResults);
 							unpackResults(mResults);
+							mCanLoadNewMovies = true;
 						} catch (JSONException e) {
 							e.printStackTrace();
 						}
@@ -106,10 +107,6 @@ public class MainActivity extends AppCompatActivity {
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-//				mRecyclerView.setAdapter(mAdapter);
-//				mGridLayoutManager = new GridLayoutManager(MainActivity.this, 2);
-//				mRecyclerView.setLayoutManager(mGridLayoutManager);
-//				mRecyclerView.setHasFixedSize(true);
 				mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 					@Override
 					public void onScrolled(RecyclerView recyclerView, int dx, int dy) {

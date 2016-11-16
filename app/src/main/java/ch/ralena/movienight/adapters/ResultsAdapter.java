@@ -90,6 +90,7 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 			mTitleLabel.setText(result.getTitle());
 			Log.d(TAG,"Loading movie position " + position + " " + mTitleLabel.getText());
 			Bitmap bitmap = mBitmapCache.get(position + "");
+			mPosition = position;
 			if (bitmap != null) {
 				mPosterImageView.setImageBitmap(bitmap);
 				mPosterLoadingIcon.setVisibility(View.GONE);
@@ -97,7 +98,6 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 			} else {
 				mPosterLoadingIcon.setVisibility(View.VISIBLE);
 				mPosterImageView.setVisibility(View.GONE);
-				mPosition = position;
 				downloadPoster(result);
 			}
 		}

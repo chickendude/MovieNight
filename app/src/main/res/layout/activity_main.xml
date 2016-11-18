@@ -32,6 +32,7 @@
 		android:scrollbars="none">
 
 		<LinearLayout
+			android:id="@+id/genreLayout"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:orientation="horizontal">
@@ -40,28 +41,18 @@
 				android:id="@+id/allButton"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_margin="3dp"
 				android:layout_weight="1"
+				android:layout_marginLeft="1dp"
+				android:layout_marginRight="1dp"
+				android:layout_marginTop="5dp"
+				android:layout_marginBottom="5dp"
+
 				android:checked="true"
 				android:background="@drawable/genre_button"
 				android:onClick="onClick"
 				android:text="@string/all_button_text"
 				android:textAllCaps="false"
 				android:textColor="@color/genre_button_text" />
-
-			<CheckedTextView
-				android:id="@+id/dramaButton"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_margin="3dp"
-				android:layout_weight="1"
-				android:background="@drawable/genre_button"
-				android:checked="false"
-				android:onClick="onClick"
-				android:text="Drama"
-				android:textAllCaps="false"
-				android:textColor="@color/genre_button_text" />
-
 		</LinearLayout>
 	</HorizontalScrollView>
 	<android.support.v7.widget.RecyclerView

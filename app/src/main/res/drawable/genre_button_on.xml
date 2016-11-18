@@ -4,7 +4,9 @@
 
 	<margin
 		android:left="5dp"
-		android:right="5dp"/>
+		android:right="5dp"
+		android:top="13dp"
+		android:bottom="3dp"/>
 
 	<padding
 		android:bottom="0dp"

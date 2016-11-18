@@ -8,16 +8,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.CheckedTextView;
+import android.widget.LinearLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import ch.ralena.movienight.adapters.ResultsAdapter;
+import ch.ralena.movienight.search.Genre;
 import ch.ralena.movienight.search.SearchResult;
 import ch.ralena.movienight.search.SearchResults;
 import okhttp3.Call;
@@ -31,9 +36,14 @@ public class MainActivity extends AppCompatActivity {
 
 	private String mResults;
 	private SearchResults mSearchResults;
-	ResultsAdapter mAdapter;
+	private ResultsAdapter mAdapter;
 
 	private boolean mCanLoadNewMovies;
+
+	// genres
+	private LinearLayout mGenreLayout;
+	private List<Genre> mGenreList;
+	private CheckedTextView mPreviousGenre;
 
 	private RecyclerView mRecyclerView;
 	private GridLayoutManager mGridLayoutManager;
@@ -47,18 +57,105 @@ public class MainActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		// prepare genre list
+		mGenreLayout = (LinearLayout) findViewById(R.id.genreLayout);
+		mGenreList = new ArrayList<>();
+		mPreviousGenre = (CheckedTextView) findViewById(R.id.allButton);
+
 		mRecyclerView = (RecyclerView) findViewById(R.id.resultsRecyclerView);
 		mGridLayoutManager = new GridLayoutManager(MainActivity.this, 2);
 		mRecyclerView.setLayoutManager(mGridLayoutManager);
 		mRecyclerView.setHasFixedSize(true);
 		mCanLoadNewMovies = true;
+		getGenreList();
 		getMovie();
+	}
+
+	private void getGenreList() {
+		if (isNetworkAvailable()) {
+			String url = API_URL + "genre/movie/list?api_key=" + API_KEY;
+			Log.d(TAG, url);
+			Request request = new Request.Builder()
+					.url(url)
+					.build();
+			client.newCall(request).enqueue(new Callback() {
+				@Override
+				public void onFailure(Call call, IOException e) {
+
+				}
+
+				@Override
+				public void onResponse(Call call, Response response) throws IOException {
+					if (!response.isSuccessful()) {
+						throw new IOException("Error: " + response);
+					} else {
+						try {
+							unpackGenres(response.body().string());
+						} catch(JSONException jse) {
+							Log.d(TAG, "Error parsing JSON data");
+							jse.printStackTrace();
+						}
+					}
+
+				}
+			});
+		}
+	}
+
+	private void unpackGenres(String string) throws JSONException {
+		JSONObject jsonResult = new JSONObject(string);
+		JSONArray genreResults = jsonResult.getJSONArray("genres");
+		for(int i = 0; i < genreResults.length(); i++) {
+			JSONObject genre = genreResults.getJSONObject(i);
+			int id = genre.getInt("id");
+			String name = genre.getString("name");
+			mGenreList.add(new Genre(name, id));
+		}
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				for (Genre genre : mGenreList) {
+					CheckedTextView button = new CheckedTextView(MainActivity.this);
+					button.setText(genre.getName());
+					button.setTextColor(getResources().getColorStateList(R.color.genre_button_text));
+					button.setBackground(getResources().getDrawable(R.drawable.genre_button));
+					LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+					int marginH = (int) TypedValue.applyDimension(
+							1,
+							TypedValue.COMPLEX_UNIT_DIP,
+							getResources().getDisplayMetrics());
+					int marginV = (int) TypedValue.applyDimension(
+							5,
+							TypedValue.COMPLEX_UNIT_DIP,
+							getResources().getDisplayMetrics());
+					lp.setMargins(marginH, marginV, marginH, marginV);
+					button.setLayoutParams(lp);
+					button.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							CheckedTextView button = (CheckedTextView) v;
+							if (button != mPreviousGenre) {
+								button.setChecked(!button.isChecked());
+								mPreviousGenre.setChecked(false);
+								mPreviousGenre = button;
+							}
+						}
+					});
+					mGenreLayout.addView(button);
+				}
+
+			}
+		});
 	}
 
 	// toggle button state for the CheckedTextView buttons
 	public void onClick(View view) {
 		CheckedTextView button = (CheckedTextView) view;
-		button.setChecked(!button.isChecked());
+		if (button != mPreviousGenre) {
+			button.setChecked(!button.isChecked());
+			mPreviousGenre.setChecked(false);
+			mPreviousGenre = button;
+		}
 	}
 
 	// default just pulls page one

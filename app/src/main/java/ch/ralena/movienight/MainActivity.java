@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	public static final String TAG = MainActivity.class.getSimpleName();
 
 	private String mResults;
+	private String mUrl;
 	private SearchResults mSearchResults;
 	private ResultsAdapter mAdapter;
 
@@ -50,9 +51,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	private List<Genre> mGenreList;
 	private int mSelectedGenre;
 
-
 	// release year
 	private LinearLayout mReleaseYearLayout;
+	private int mSelectedReleaseYear;
+	private List<Year> mYearList;
 
 	private RecyclerView mRecyclerView;
 	private GridLayoutManager mGridLayoutManager;
@@ -72,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		mSelectedGenre = -1;
 
 		mReleaseYearLayout = (LinearLayout) findViewById(R.id.releaseYearLayout);
+		mSelectedReleaseYear = -1;
 
 		mRecyclerView = (RecyclerView) findViewById(R.id.resultsRecyclerView);
 		mGridLayoutManager = new GridLayoutManager(MainActivity.this, 2);
@@ -80,27 +83,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		mCanLoadNewMovies = true;
 		getYearList();
 		getGenreList();
-		getMovie();
+		getMovieList();
 	}
 
 	private void getYearList() {
 		Calendar calendar = Calendar.getInstance();
 		int curYear = calendar.get(Calendar.YEAR);
-		List<Year> yearList = new ArrayList<>();
+		mYearList = new ArrayList<>();
 		// first get the current year and last year
-		yearList.add(new Year(curYear--));
-		yearList.add(new Year(curYear--));
+		mYearList.add(new Year(curYear--));
+		mYearList.add(new Year(curYear--));
 		// next get years until 1960
-		int endYear = (curYear/10)*10;
+		int endYear = (curYear / 10) * 10;
 		endYear = (endYear != curYear) ? endYear : endYear - 10;
 		do {
-			yearList.add(new Year(curYear,endYear));
+			mYearList.add(new Year(curYear, endYear));
 			curYear = endYear;
 			endYear -= 10;
 		} while (endYear >= 1960);
-		yearList.add(new Year(curYear, 1900, "pre-1960"));
+		mYearList.add(new Year(curYear, 1900, "pre-1960"));
 
-		for (Year year : yearList) {
+		int i = 0;
+		for (Year year : mYearList) {
 			CheckedTextView button = new CheckedTextView(MainActivity.this);
 			button.setText(year.getTitle());
 			button.setTextColor(getResources().getColorStateList(R.color.genre_button_text));
@@ -117,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			lp.setMargins(marginH, marginV, marginH, marginV);
 			button.setLayoutParams(lp);
 			button.setOnClickListener(MainActivity.this);
+			button.setTag(i++);
 			mReleaseYearLayout.addView(button);
 		}
 	}
@@ -143,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 					} else {
 						try {
 							unpackGenres(response.body().string());
-						} catch(JSONException jse) {
+						} catch (JSONException jse) {
 							Log.d(TAG, "Error parsing JSON data");
 							jse.printStackTrace();
 						}
@@ -157,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	private void unpackGenres(String string) throws JSONException {
 		JSONObject jsonResult = new JSONObject(string);
 		JSONArray genreResults = jsonResult.getJSONArray("genres");
-		for(int i = 0; i < genreResults.length(); i++) {
+		for (int i = 0; i < genreResults.length(); i++) {
 			JSONObject genre = genreResults.getJSONObject(i);
 			int id = genre.getInt("id");
 			String name = genre.getString("name");
@@ -183,9 +188,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 					lp.setMargins(marginH, marginV, marginH, marginV);
 					button.setLayoutParams(lp);
 					button.setOnClickListener(MainActivity.this);
+					button.setTag(genre.getId());
 					mGenreLayout.addView(button);
 				}
-
 			}
 		});
 	}
@@ -198,10 +203,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		for (int i = 0; i < numSubViews; i++) {
 			CheckedTextView b = (CheckedTextView) listHolder.getChildAt(i);
 			b.setChecked(false);
-			if ( b == button)
-				mSelectedGenre = i-1;
 		}
 		button.setChecked(true);
+		int tag = Integer.parseInt(button.getTag().toString());
+		if (listHolder == mGenreLayout) {
+			Log.d(TAG, "Genre changed");
+			mSelectedGenre = tag;
+		} else if (listHolder == mReleaseYearLayout) {
+			Log.d(TAG, "Release Year changed");
+			mSelectedReleaseYear = tag;
+		}
 	}
 
 	public void setDate(View v) {
@@ -214,18 +225,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				textView.setText(month + "-" + dayOfMonth + "-" + year);
 			}
 		};
-		DatePickerDialog datePickerDialog = new DatePickerDialog(this, odsl, calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));
+		DatePickerDialog datePickerDialog = new DatePickerDialog(this, odsl, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 		datePickerDialog.show();
 	}
 
 	// default just pulls page one
-	public void getMovie() {
-		getMovie(1);
+	public void getMovieList() {
+		String url = API_URL + "discover/movie/?api_key=" + API_KEY;
+		getMovieList(url, 1, true);
 	}
 
-	public void getMovie(int page) {
+	// pulls url and refreshes screen if it's a new search
+	public void getMovieList(String url, int page, final boolean isNewSearch) {
+		mUrl = url;
 		if (isNetworkAvailable()) {
-			String url = API_URL + "discover/movie/?api_key=" + API_KEY + "&page=" + page;
+			url += "&page=" + page;
 			Log.d(TAG, url);
 			Request request = new Request.Builder()
 					.url(url)
@@ -245,6 +259,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 						try {
 							mResults = response.body().string();
 							Log.d(TAG, mResults);
+							if (isNewSearch)
+								mAdapter = null;
 							unpackResults(mResults);
 							mCanLoadNewMovies = true;
 						} catch (JSONException e) {
@@ -278,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 								if ((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
 									mCanLoadNewMovies = false;
 									Log.v(TAG, "Load new movies");
-									getMovie(mSearchResults.getCurPage()+1);
+									getMovieList(mUrl, mSearchResults.getCurPage() + 1, false);
 								}
 							}
 						}
@@ -342,12 +358,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 					mAdapter.addAll(mSearchResults.getSearchResults());
 					mAdapter.notifyDataSetChanged();
 				} else {
-					mAdapter = new ResultsAdapter(mSearchResults.getSearchResults(),MainActivity.this);
+					mAdapter = new ResultsAdapter(mSearchResults.getSearchResults(), MainActivity.this);
 					mRecyclerView.setAdapter(mAdapter);
 				}
 			}
 		});
-		Log.d(TAG,mSearchResults.toString());
+		Log.d(TAG, mSearchResults.toString());
 	}
 
 	private boolean isNetworkAvailable() {
@@ -366,43 +382,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		// check genre
 		String genreAttr = "";
 		if (mSelectedGenre >= 0) {
-			Genre genre = mGenreList.get(mSelectedGenre);
-			Log.d(TAG,genre.getName());
-			genreAttr = "&with_genres=" + genre.getId();
+			genreAttr = "&with_genres=" + mSelectedGenre;
 		}
-		if (isNetworkAvailable()) {
-			String url = API_URL + "discover/movie/?api_key=" + API_KEY + genreAttr;
-			Log.d(TAG, url);
-			Request request = new Request.Builder()
-					.url(url)
-					.build();
-			client.newCall(request).enqueue(new Callback() {
-				@Override
-				public void onFailure(Call call, IOException e) {
-					Log.d(TAG, "Seems there was an error with the URL.");
-					e.printStackTrace();
-				}
-
-				@Override
-				public void onResponse(Call call, Response response) throws IOException {
-					if (!response.isSuccessful()) {
-						throw new IOException("Error: " + response);
-					} else {
-						try {
-							mResults = response.body().string();
-							Log.d(TAG, mResults);
-							mAdapter = null;
-							unpackResults(mResults);
-							mCanLoadNewMovies = true;
-						} catch (JSONException e) {
-							e.printStackTrace();
-						}
-
-						// update activity with data
-						updateActivity();
-					}
-				}
-			});
+		String yearAttr = "";
+		if (mSelectedReleaseYear >= 0) {
+			Year year = mYearList.get(mSelectedReleaseYear);
+			Log.d(TAG, year.getTitle());
+			if (year.getLowYear() == 0) {
+				yearAttr = "&primary_release_year=" + year.getHighYear();
+			} else {
+				yearAttr = "&primary_release_date.gte=" + year.getLowYear() + "-1-1&primary_release_date.lte=" + (year.getHighYear() - 1) + "-12-31";
+			}
 		}
+		String url = API_URL + "discover/movie/?api_key=" + API_KEY + genreAttr + yearAttr;
+		getMovieList(url, 1, true);
 	}
 }

@@ -30,8 +30,8 @@
 		android:layout_height="wrap_content"
 		android:layout_below="@+id/editText"
 		android:layout_centerHorizontal="true"
-		android:orientation="vertical"
-		android:background="@drawable/filter_box">
+		android:background="@drawable/filter_box"
+		android:orientation="vertical">
 
 		<HorizontalScrollView
 			android:id="@+id/genreScrollView"
@@ -57,6 +57,7 @@
 					android:background="@drawable/genre_button"
 					android:checked="true"
 					android:onClick="onClick"
+					android:tag="-1"
 					android:text="@string/all_button_text"
 					android:textAllCaps="false"
 					android:textColor="@color/genre_button_text"/>
@@ -86,6 +87,7 @@
 					android:background="@drawable/genre_button"
 					android:checked="true"
 					android:onClick="onClick"
+					android:tag="-1"
 					android:text="@string/all_button_text"
 					android:textAllCaps="false"
 					android:textColor="@color/genre_button_text"/>
@@ -160,8 +162,8 @@
 		android:layout_above="@id/filterLayout"
 		android:layout_alignParentEnd="true"
 		android:layout_alignParentTop="true"
-		android:onClick="newSearch"
 		android:background="#00FFFFFF"
+		android:onClick="newSearch"
 		app:srcCompat="@android:drawable/ic_menu_search"/>
 
 	<android.support.v7.widget.RecyclerView

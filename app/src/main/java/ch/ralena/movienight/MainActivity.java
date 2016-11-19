@@ -14,7 +14,6 @@ import android.view.View;
 import android.widget.CheckedTextView;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
-import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -50,10 +49,6 @@ public class MainActivity extends AppCompatActivity {
 	private List<Genre> mGenreList;
 	private CheckedTextView mPreviousGenre;
 
-	// year picker
-	private NumberPicker mYearStartPicker;
-	private NumberPicker mYearEndPicker;
-
 	private RecyclerView mRecyclerView;
 	private GridLayoutManager mGridLayoutManager;
 
@@ -70,15 +65,6 @@ public class MainActivity extends AppCompatActivity {
 		mGenreLayout = (LinearLayout) findViewById(R.id.genreLayout);
 		mGenreList = new ArrayList<>();
 		mPreviousGenre = (CheckedTextView) findViewById(R.id.allButton);
-
-		// set number picker max/min values
-		mYearStartPicker = (NumberPicker) findViewById(R.id.yearStartSpinner);
-		mYearStartPicker.setMinValue(1900);
-		Calendar calendar = Calendar.getInstance();
-		int curYear = calendar.get(Calendar.YEAR);
-		mYearStartPicker.setMaxValue(curYear);
-		mYearStartPicker.setValue(curYear);
-		mYearStartPicker.setWrapSelectorWheel(false);
 
 		mRecyclerView = (RecyclerView) findViewById(R.id.resultsRecyclerView);
 		mGridLayoutManager = new GridLayoutManager(MainActivity.this, 2);
@@ -177,6 +163,9 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	public void setDate(View v) {
+
+
+
 		final TextView textView = (TextView) v;
 		Calendar calendar = Calendar.getInstance();
 		DatePickerDialog.OnDateSetListener odsl = new DatePickerDialog.OnDateSetListener() {

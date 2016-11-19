@@ -160,6 +160,7 @@
 		android:layout_above="@id/filterLayout"
 		android:layout_alignParentEnd="true"
 		android:layout_alignParentTop="true"
+		android:onClick="newSearch"
 		android:background="#00FFFFFF"
 		app:srcCompat="@android:drawable/ic_menu_search"/>
 

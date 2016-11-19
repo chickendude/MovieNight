@@ -48,7 +48,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	// genres
 	private LinearLayout mGenreLayout;
 	private List<Genre> mGenreList;
-//	private CheckedTextView mPreviousGenre;
+	private int mSelectedGenre;
+
 
 	// release year
 	private LinearLayout mReleaseYearLayout;
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		// prepare genre list
 		mGenreLayout = (LinearLayout) findViewById(R.id.genreLayout);
 		mGenreList = new ArrayList<>();
-//		mPreviousGenre = (CheckedTextView) findViewById(R.id.allButton);
+		mSelectedGenre = -1;
 
 		mReleaseYearLayout = (LinearLayout) findViewById(R.id.releaseYearLayout);
 
@@ -121,6 +122,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	}
 
 	private void getGenreList() {
+		CheckedTextView allButton = (CheckedTextView) findViewById(R.id.allButton);
+		allButton.setChecked(true);
 		if (isNetworkAvailable()) {
 			String url = API_URL + "genre/movie/list?api_key=" + API_KEY;
 			Log.d(TAG, url);
@@ -189,19 +192,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 	// toggle button state for the CheckedTextView buttons
 	public void onClick(View view) {
+		CheckedTextView button = (CheckedTextView) view;
 		LinearLayout listHolder = (LinearLayout) view.getParent();
 		int numSubViews = listHolder.getChildCount();
 		for (int i = 0; i < numSubViews; i++) {
-			CheckedTextView button = (CheckedTextView) listHolder.getChildAt(i);
-			button.setChecked(false);
+			CheckedTextView b = (CheckedTextView) listHolder.getChildAt(i);
+			b.setChecked(false);
+			if ( b == button)
+				mSelectedGenre = i-1;
 		}
-		CheckedTextView button = (CheckedTextView) view;
 		button.setChecked(true);
-//		if (button != mPreviousGenre) {
-//			button.setChecked(!button.isChecked());
-//			mPreviousGenre.setChecked(false);
-//			mPreviousGenre = button;
-//		}
 	}
 
 	public void setDate(View v) {
@@ -225,7 +225,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 	public void getMovie(int page) {
 		if (isNetworkAvailable()) {
-
 			String url = API_URL + "discover/movie/?api_key=" + API_KEY + "&page=" + page;
 			Log.d(TAG, url);
 			Request request = new Request.Builder()
@@ -360,5 +359,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			isAvailable = true;
 		}
 		return isAvailable;
+	}
+
+	public void newSearch(View v) {
+		Log.d(TAG, "Search");
+		// check genre
+		String genreAttr = "";
+		if (mSelectedGenre >= 0) {
+			Genre genre = mGenreList.get(mSelectedGenre);
+			Log.d(TAG,genre.getName());
+			genreAttr = "&with_genres=" + genre.getId();
+		}
+		if (isNetworkAvailable()) {
+			String url = API_URL + "discover/movie/?api_key=" + API_KEY + genreAttr;
+			Log.d(TAG, url);
+			Request request = new Request.Builder()
+					.url(url)
+					.build();
+			client.newCall(request).enqueue(new Callback() {
+				@Override
+				public void onFailure(Call call, IOException e) {
+					Log.d(TAG, "Seems there was an error with the URL.");
+					e.printStackTrace();
+				}
+
+				@Override
+				public void onResponse(Call call, Response response) throws IOException {
+					if (!response.isSuccessful()) {
+						throw new IOException("Error: " + response);
+					} else {
+						try {
+							mResults = response.body().string();
+							Log.d(TAG, mResults);
+							mAdapter = null;
+							unpackResults(mResults);
+							mCanLoadNewMovies = true;
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+
+						// update activity with data
+						updateActivity();
+					}
+				}
+			});
+		}
 	}
 }

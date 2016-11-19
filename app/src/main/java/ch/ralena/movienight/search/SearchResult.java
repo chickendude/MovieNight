@@ -10,6 +10,7 @@ public class SearchResult {
 	private String mTitle;
 	private String mOriginalLanguage;
 	private String mOriginalTitle;
+	private String mOverview;
 	private Date mReleaseDate;
 	private boolean mIsAdult;
 	private int mId;
@@ -18,11 +19,12 @@ public class SearchResult {
 	private double mPopularityRating;
 	private double mVoteAverage;
 
-	public SearchResult(String posterPath, String title, String originalLanguage, String originalTitle, String releaseDate, boolean isAdult, int id, int voteCount, int[] genreIds, double popularityRating, double voteAverage) {
+	public SearchResult(String posterPath, String title, String originalLanguage, String originalTitle, String overview, String releaseDate, boolean isAdult, int id, int voteCount, int[] genreIds, double popularityRating, double voteAverage) {
 		mPosterPath = posterPath;
 		mTitle = title;
 		mOriginalLanguage = originalLanguage;
 		mOriginalTitle = originalTitle;
+		mOverview = overview;
 		mIsAdult = isAdult;
 		mId = id;
 		mVoteCount = voteCount;
@@ -129,11 +131,20 @@ public class SearchResult {
 		mVoteAverage = voteAverage;
 	}
 
+	public String getOverview() {
+		return mOverview;
+	}
+
 	@Override
 	public String toString() {
 		return "SearchResult{" +
 				"mTitle='" + mTitle + '\'' +
 				", mReleaseDate=" + mReleaseDate +
 				'}';
+	}
+
+	public String getFormattedReleaseDate() {
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		return df.format(mReleaseDate);
 	}
 }

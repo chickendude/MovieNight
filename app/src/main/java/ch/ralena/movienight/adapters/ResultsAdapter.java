@@ -2,6 +2,7 @@ package ch.ralena.movienight.adapters;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.LruCache;
@@ -18,6 +19,7 @@ import java.util.List;
 
 import ch.ralena.movienight.MainActivity;
 import ch.ralena.movienight.R;
+import ch.ralena.movienight.fragments.MovieFragment;
 import ch.ralena.movienight.search.SearchResult;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -77,6 +79,7 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 		public ProgressBar mPosterLoadingIcon;
 		public TextView mTitleLabel;
 		public int mPosition;
+		public SearchResult mResult;
 
 		public ResultsViewHolder(View itemView) {
 			super(itemView);
@@ -88,6 +91,7 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 
 		public void bindResults(SearchResult result, int position) {
 			mTitleLabel.setText(result.getTitle());
+			mResult = result;
 			Log.d(TAG,"Loading movie position " + position + " " + mTitleLabel.getText());
 			Bitmap bitmap = mBitmapCache.get(position + "");
 			mPosition = position;
@@ -147,7 +151,19 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 		@Override
 		public void onClick(View v) {
 			ImageView poster = (ImageView) v.findViewById(R.id.posterImageView);
+
+			TextView title = (TextView) v.findViewById(R.id.titleLabel);
 			Log.d(TAG, mPosition + " clicked.");
+
+			Bundle bundle = new Bundle();
+			bundle.putString(MovieFragment.TITLE, title.getText().toString());
+			bundle.putString(MovieFragment.OVERVIEW, mResult.getOverview());
+			bundle.putString(MovieFragment.POSTERURL,mResult.getPosterPath());
+			bundle.putString(MovieFragment.RELEASE_DATE,mResult.getFormattedReleaseDate()+"");
+			MovieFragment dialog = new MovieFragment();
+			dialog.setArguments(bundle);
+			dialog.show(mMainActivity.getFragmentManager(), "error_dialog");
+
 		}
 	}
 

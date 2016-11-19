@@ -325,6 +325,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			String title = movie.getString("title");
 			String originalLanguage = movie.getString("original_language");
 			String originalTitle = movie.getString("original_title");
+			String overview = movie.getString("overview");
 			String releaseDate = movie.getString("release_date");
 			boolean isAdult = movie.getBoolean("adult");
 			int id = movie.getInt("id");
@@ -343,6 +344,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 					title,
 					originalLanguage,
 					originalTitle,
+					overview,
 					releaseDate,
 					isAdult,
 					id,

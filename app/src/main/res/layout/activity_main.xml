@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:id="@+id/activity_main"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:paddingBottom="@dimen/activity_vertical_margin"
-	android:paddingLeft="@dimen/activity_horizontal_margin"
-	android:paddingRight="@dimen/activity_horizontal_margin"
-	android:paddingTop="@dimen/activity_vertical_margin"
-	android:background="@color/colorBackground"
-	tools:context="ch.ralena.movienight.MainActivity">
+				xmlns:app="http://schemas.android.com/apk/res-auto"
+				xmlns:tools="http://schemas.android.com/tools"
+				android:id="@+id/activity_main"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:background="@color/colorBackground"
+				android:paddingBottom="@dimen/activity_vertical_margin"
+				android:paddingLeft="@dimen/activity_horizontal_margin"
+				android:paddingRight="@dimen/activity_horizontal_margin"
+				android:paddingTop="@dimen/activity_vertical_margin"
+				tools:context="ch.ralena.movienight.MainActivity">
 
 	<EditText
 		android:id="@+id/editText"
@@ -21,43 +22,120 @@
 		android:ems="10"
 		android:hint="Movie Name"
 		android:inputType="textPersonName"
-		android:padding="5dp" />
+		android:padding="5dp"/>
 
-	<HorizontalScrollView
+	<LinearLayout
+		android:id="@+id/filterLayout"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_below="@+id/editText"
 		android:layout_centerHorizontal="true"
-		android:id="@+id/genreScrollView"
-		android:scrollbars="none">
+		android:orientation="vertical">
+
+		<HorizontalScrollView
+			android:id="@+id/genreScrollView"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:scrollbars="none">
+
+			<LinearLayout
+				android:id="@+id/genreLayout"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal">
+
+				<CheckedTextView
+					android:id="@+id/allButton"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="5dp"
+					android:layout_marginLeft="1dp"
+					android:layout_marginRight="1dp"
+					android:layout_marginTop="5dp"
+					android:layout_weight="1"
+					android:background="@drawable/genre_button"
+					android:checked="true"
+					android:onClick="onClick"
+					android:text="@string/all_button_text"
+					android:textAllCaps="false"
+					android:textColor="@color/genre_button_text"/>
+			</LinearLayout>
+		</HorizontalScrollView>
 
 		<LinearLayout
-			android:id="@+id/genreLayout"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
+			android:layout_height="match_parent"
 			android:orientation="horizontal">
 
-			<CheckedTextView
-				android:id="@+id/allButton"
+			<EditText
+				android:id="@+id/editText2"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_weight="1"
-				android:layout_marginLeft="1dp"
-				android:layout_marginRight="1dp"
-				android:layout_marginTop="5dp"
-				android:layout_marginBottom="5dp"
+				android:hint="Min. ratings"
+				android:inputType="number"/>
 
-				android:checked="true"
-				android:background="@drawable/genre_button"
-				android:onClick="onClick"
-				android:text="@string/all_button_text"
-				android:textAllCaps="false"
-				android:textColor="@color/genre_button_text" />
+			<EditText
+				android:id="@+id/dateStart"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:hint="Start Date"
+				android:inputType="none"
+				android:onClick="setDate"/>
+
+			<TextView
+				android:id="@+id/dateSpacer"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text=" - "/>
+
+			<EditText
+				android:id="@+id/dateEnd"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:enabled="false"
+				android:hint="End Date"
+				android:onClick="setDate"/>
+
 		</LinearLayout>
-	</HorizontalScrollView>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:orientation="horizontal">
+
+			<TextView
+				android:id="@+id/textView2"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginEnd="4dp"
+				android:text="@string/ratingTxt"/>
+
+			<RatingBar
+				android:id="@+id/ratingBar"
+				style="?android:attr/ratingBarStyleSmall"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:isIndicator="false"
+				android:numStars="10"
+				android:stepSize=".5"/>
+		</LinearLayout>
+
+	</LinearLayout>
+
+	<ImageButton
+		android:id="@+id/imageButton"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_above="@id/filterLayout"
+		android:layout_alignParentEnd="true"
+		android:layout_alignParentTop="true"
+		android:background="#00FFFFFF"
+		app:srcCompat="@android:drawable/ic_menu_search"/>
+
 	<android.support.v7.widget.RecyclerView
 		android:id="@+id/resultsRecyclerView"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:layout_below="@id/genreScrollView"/>
+		android:layout_alignParentBottom="true"
+		android:layout_below="@id/filterLayout"/>
 </RelativeLayout>

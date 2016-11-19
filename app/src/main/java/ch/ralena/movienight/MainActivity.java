@@ -1,5 +1,6 @@
 package ch.ralena.movienight;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -11,7 +12,10 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.CheckedTextView;
+import android.widget.DatePicker;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,6 +23,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import ch.ralena.movienight.adapters.ResultsAdapter;
@@ -45,6 +50,10 @@ public class MainActivity extends AppCompatActivity {
 	private List<Genre> mGenreList;
 	private CheckedTextView mPreviousGenre;
 
+	// year picker
+	private NumberPicker mYearStartPicker;
+	private NumberPicker mYearEndPicker;
+
 	private RecyclerView mRecyclerView;
 	private GridLayoutManager mGridLayoutManager;
 
@@ -61,6 +70,15 @@ public class MainActivity extends AppCompatActivity {
 		mGenreLayout = (LinearLayout) findViewById(R.id.genreLayout);
 		mGenreList = new ArrayList<>();
 		mPreviousGenre = (CheckedTextView) findViewById(R.id.allButton);
+
+		// set number picker max/min values
+		mYearStartPicker = (NumberPicker) findViewById(R.id.yearStartSpinner);
+		mYearStartPicker.setMinValue(1900);
+		Calendar calendar = Calendar.getInstance();
+		int curYear = calendar.get(Calendar.YEAR);
+		mYearStartPicker.setMaxValue(curYear);
+		mYearStartPicker.setValue(curYear);
+		mYearStartPicker.setWrapSelectorWheel(false);
 
 		mRecyclerView = (RecyclerView) findViewById(R.id.resultsRecyclerView);
 		mGridLayoutManager = new GridLayoutManager(MainActivity.this, 2);
@@ -156,6 +174,20 @@ public class MainActivity extends AppCompatActivity {
 			mPreviousGenre.setChecked(false);
 			mPreviousGenre = button;
 		}
+	}
+
+	public void setDate(View v) {
+		final TextView textView = (TextView) v;
+		Calendar calendar = Calendar.getInstance();
+		DatePickerDialog.OnDateSetListener odsl = new DatePickerDialog.OnDateSetListener() {
+			@Override
+			public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+				Log.d(TAG, "Date set");
+				textView.setText(month + "-" + dayOfMonth + "-" + year);
+			}
+		};
+		DatePickerDialog datePickerDialog = new DatePickerDialog(this, odsl, calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));
+		datePickerDialog.show();
 	}
 
 	// default just pulls page one

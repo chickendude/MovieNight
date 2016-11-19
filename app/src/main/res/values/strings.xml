@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Movie Night</string>
     <string name="all_button_text">All</string>
+    <string name="ratingTxt">Rating:</string>
+    <string name="minRatingsTxt">Min. Ratings:</string>
 </resources>

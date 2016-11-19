@@ -13,6 +13,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.CheckedTextView;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -385,6 +386,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		if (mSelectedGenre >= 0) {
 			genreAttr = "&with_genres=" + mSelectedGenre;
 		}
+		// year
 		String yearAttr = "";
 		if (mSelectedReleaseYear >= 0) {
 			Year year = mYearList.get(mSelectedReleaseYear);
@@ -395,12 +397,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				yearAttr = "&primary_release_date.gte=" + year.getLowYear() + "-1-1&primary_release_date.lte=" + (year.getHighYear() - 1) + "-12-31";
 			}
 		}
-
+		// rating
 		String ratingAttr = "";
 		float rating = ((RatingBar) findViewById(R.id.ratingBar)).getRating();
 		ratingAttr = "&vote_average.gte=" + rating;
-
-		String url = API_URL + "discover/movie/?api_key=" + API_KEY + genreAttr + yearAttr + ratingAttr;
+		// vote count
+		String voteCount = "";
+		String numVotes = ((EditText) findViewById(R.id.voteCountEditText)).getText().toString();
+		if (numVotes != "") {
+			voteCount = "&vote_count.gte=" + Integer.parseInt(numVotes);
+		}
+		// build string
+		String url = API_URL + "discover/movie/?api_key=" + API_KEY + genreAttr + yearAttr + ratingAttr + voteCount;
 		getMovieList(url, 1, true);
 	}
 }

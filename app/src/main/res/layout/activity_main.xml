@@ -30,7 +30,8 @@
 		android:layout_height="wrap_content"
 		android:layout_below="@+id/editText"
 		android:layout_centerHorizontal="true"
-		android:orientation="vertical">
+		android:orientation="vertical"
+		android:background="@drawable/filter_box">
 
 		<HorizontalScrollView
 			android:id="@+id/genreScrollView"
@@ -48,10 +49,10 @@
 					android:id="@+id/allButton"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:layout_marginBottom="5dp"
+					android:layout_marginBottom="2dp"
 					android:layout_marginLeft="1dp"
 					android:layout_marginRight="1dp"
-					android:layout_marginTop="5dp"
+					android:layout_marginTop="2dp"
 					android:layout_weight="1"
 					android:background="@drawable/genre_button"
 					android:checked="true"
@@ -61,6 +62,36 @@
 					android:textColor="@color/genre_button_text"/>
 			</LinearLayout>
 		</HorizontalScrollView>
+
+		<HorizontalScrollView
+			android:id="@+id/releaseYearScrollView"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:scrollbars="none">
+
+			<LinearLayout
+				android:id="@+id/releaseYearLayout"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal">
+
+				<CheckedTextView
+					android:id="@+id/allYearsButton"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="5dp"
+					android:layout_marginLeft="1dp"
+					android:layout_marginRight="1dp"
+					android:layout_weight="1"
+					android:background="@drawable/genre_button"
+					android:checked="true"
+					android:onClick="onClick"
+					android:text="@string/all_button_text"
+					android:textAllCaps="false"
+					android:textColor="@color/genre_button_text"/>
+			</LinearLayout>
+		</HorizontalScrollView>
+
 
 		<LinearLayout
 			android:layout_width="match_parent"

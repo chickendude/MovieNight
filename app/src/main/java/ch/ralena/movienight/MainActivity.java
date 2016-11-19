@@ -29,13 +29,14 @@ import ch.ralena.movienight.adapters.ResultsAdapter;
 import ch.ralena.movienight.search.Genre;
 import ch.ralena.movienight.search.SearchResult;
 import ch.ralena.movienight.search.SearchResults;
+import ch.ralena.movienight.search.Year;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 	public static final String TAG = MainActivity.class.getSimpleName();
 
 	private String mResults;
@@ -47,7 +48,10 @@ public class MainActivity extends AppCompatActivity {
 	// genres
 	private LinearLayout mGenreLayout;
 	private List<Genre> mGenreList;
-	private CheckedTextView mPreviousGenre;
+//	private CheckedTextView mPreviousGenre;
+
+	// release year
+	private LinearLayout mReleaseYearLayout;
 
 	private RecyclerView mRecyclerView;
 	private GridLayoutManager mGridLayoutManager;
@@ -64,15 +68,56 @@ public class MainActivity extends AppCompatActivity {
 		// prepare genre list
 		mGenreLayout = (LinearLayout) findViewById(R.id.genreLayout);
 		mGenreList = new ArrayList<>();
-		mPreviousGenre = (CheckedTextView) findViewById(R.id.allButton);
+//		mPreviousGenre = (CheckedTextView) findViewById(R.id.allButton);
+
+		mReleaseYearLayout = (LinearLayout) findViewById(R.id.releaseYearLayout);
 
 		mRecyclerView = (RecyclerView) findViewById(R.id.resultsRecyclerView);
 		mGridLayoutManager = new GridLayoutManager(MainActivity.this, 2);
 		mRecyclerView.setLayoutManager(mGridLayoutManager);
 		mRecyclerView.setHasFixedSize(true);
 		mCanLoadNewMovies = true;
+		getYearList();
 		getGenreList();
 		getMovie();
+	}
+
+	private void getYearList() {
+		Calendar calendar = Calendar.getInstance();
+		int curYear = calendar.get(Calendar.YEAR);
+		List<Year> yearList = new ArrayList<>();
+		// first get the current year and last year
+		yearList.add(new Year(curYear--));
+		yearList.add(new Year(curYear--));
+		// next get years until 1960
+		int endYear = (curYear/10)*10;
+		endYear = (endYear != curYear) ? endYear : endYear - 10;
+		do {
+			yearList.add(new Year(curYear,endYear));
+			curYear = endYear;
+			endYear -= 10;
+		} while (endYear >= 1960);
+		yearList.add(new Year(curYear, 1900, "pre-1960"));
+
+		for (Year year : yearList) {
+			CheckedTextView button = new CheckedTextView(MainActivity.this);
+			button.setText(year.getTitle());
+			button.setTextColor(getResources().getColorStateList(R.color.genre_button_text));
+			button.setBackground(getResources().getDrawable(R.drawable.genre_button));
+			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+			int marginH = (int) TypedValue.applyDimension(
+					1,
+					TypedValue.COMPLEX_UNIT_DIP,
+					getResources().getDisplayMetrics());
+			int marginV = (int) TypedValue.applyDimension(
+					2,
+					TypedValue.COMPLEX_UNIT_DIP,
+					getResources().getDisplayMetrics());
+			lp.setMargins(marginH, marginV, marginH, marginV);
+			button.setLayoutParams(lp);
+			button.setOnClickListener(MainActivity.this);
+			mReleaseYearLayout.addView(button);
+		}
 	}
 
 	private void getGenreList() {
@@ -129,22 +174,12 @@ public class MainActivity extends AppCompatActivity {
 							TypedValue.COMPLEX_UNIT_DIP,
 							getResources().getDisplayMetrics());
 					int marginV = (int) TypedValue.applyDimension(
-							5,
+							2,
 							TypedValue.COMPLEX_UNIT_DIP,
 							getResources().getDisplayMetrics());
 					lp.setMargins(marginH, marginV, marginH, marginV);
 					button.setLayoutParams(lp);
-					button.setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							CheckedTextView button = (CheckedTextView) v;
-							if (button != mPreviousGenre) {
-								button.setChecked(!button.isChecked());
-								mPreviousGenre.setChecked(false);
-								mPreviousGenre = button;
-							}
-						}
-					});
+					button.setOnClickListener(MainActivity.this);
 					mGenreLayout.addView(button);
 				}
 
@@ -154,18 +189,22 @@ public class MainActivity extends AppCompatActivity {
 
 	// toggle button state for the CheckedTextView buttons
 	public void onClick(View view) {
-		CheckedTextView button = (CheckedTextView) view;
-		if (button != mPreviousGenre) {
-			button.setChecked(!button.isChecked());
-			mPreviousGenre.setChecked(false);
-			mPreviousGenre = button;
+		LinearLayout listHolder = (LinearLayout) view.getParent();
+		int numSubViews = listHolder.getChildCount();
+		for (int i = 0; i < numSubViews; i++) {
+			CheckedTextView button = (CheckedTextView) listHolder.getChildAt(i);
+			button.setChecked(false);
 		}
+		CheckedTextView button = (CheckedTextView) view;
+		button.setChecked(true);
+//		if (button != mPreviousGenre) {
+//			button.setChecked(!button.isChecked());
+//			mPreviousGenre.setChecked(false);
+//			mPreviousGenre = button;
+//		}
 	}
 
 	public void setDate(View v) {
-
-
-
 		final TextView textView = (TextView) v;
 		Calendar calendar = Calendar.getInstance();
 		DatePickerDialog.OnDateSetListener odsl = new DatePickerDialog.OnDateSetListener() {

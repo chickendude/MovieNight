@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.CheckedTextView;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -394,7 +395,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				yearAttr = "&primary_release_date.gte=" + year.getLowYear() + "-1-1&primary_release_date.lte=" + (year.getHighYear() - 1) + "-12-31";
 			}
 		}
-		String url = API_URL + "discover/movie/?api_key=" + API_KEY + genreAttr + yearAttr;
+
+		String ratingAttr = "";
+		float rating = ((RatingBar) findViewById(R.id.ratingBar)).getRating();
+		ratingAttr = "&vote_average.gte=" + rating;
+
+		String url = API_URL + "discover/movie/?api_key=" + API_KEY + genreAttr + yearAttr + ratingAttr;
 		getMovieList(url, 1, true);
 	}
 }

@@ -94,43 +94,6 @@
 			</LinearLayout>
 		</HorizontalScrollView>
 
-
-		<LinearLayout
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:orientation="horizontal">
-
-			<EditText
-				android:id="@+id/editText2"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:hint="Min. ratings"
-				android:inputType="number"/>
-
-			<EditText
-				android:id="@+id/dateStart"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:hint="Start Date"
-				android:inputType="none"
-				android:onClick="setDate"/>
-
-			<TextView
-				android:id="@+id/dateSpacer"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text=" - "/>
-
-			<EditText
-				android:id="@+id/dateEnd"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:enabled="false"
-				android:hint="End Date"
-				android:onClick="setDate"/>
-
-		</LinearLayout>
-
 		<LinearLayout
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
@@ -141,9 +104,11 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_marginEnd="4dp"
-				android:text="@string/ratingTxt"/>
+				android:text="@string/ratingTxt"
+				android:textSize="18sp"/>
 
 			<RatingBar
+				android:layout_gravity="center"
 				android:id="@+id/ratingBar"
 				style="?android:attr/ratingBarStyleSmall"
 				android:layout_width="wrap_content"
@@ -151,8 +116,15 @@
 				android:isIndicator="false"
 				android:numStars="10"
 				android:stepSize=".5"/>
-		</LinearLayout>
 
+		</LinearLayout>
+		<EditText
+			android:id="@+id/numRatingsEditText"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:hint="@string/numVotesTxt"
+			android:textAlignment="center"
+			android:inputType="number"/>
 	</LinearLayout>
 
 	<ImageButton

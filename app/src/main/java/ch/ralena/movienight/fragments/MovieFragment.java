@@ -50,7 +50,6 @@ public class MovieFragment extends DialogFragment {
 		String releaseDate = bundle.getString(RELEASE_DATE);
 		double rating = bundle.getDouble(RATING);
 
-
 		String url = IMAGE_URL_BASE + "500" + posterUrl;
 		Log.d(TAG,url);
 

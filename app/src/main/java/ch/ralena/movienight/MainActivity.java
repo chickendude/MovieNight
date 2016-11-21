@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 	private boolean mCanLoadNewMovies;
 
+	private EditText mSearchBox;
 	private LinearLayout mFilterOptionsLayout;
 	private LinearLayout mFilterLayout;
 	public boolean isFilterOpen;
@@ -71,6 +74,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		mSearchBox = (EditText) findViewById(R.id.searchBoxEditText);
+		mSearchBox.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				if (s.length()>0) {
+					mFilterLayout.setVisibility(View.GONE);
+				} else {
+					mFilterLayout.setVisibility(View.VISIBLE);
+				}
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+
+			}
+		});
 		mFilterOptionsLayout = (LinearLayout) findViewById(R.id.filterOptionsLayout);
 		mFilterOptionsLayout.setVisibility(View.GONE);
 		mFilterLayout = (LinearLayout) findViewById(R.id.filterLayout);
@@ -374,35 +398,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 	public void newSearch(View v) {
 		Log.d(TAG, "Search");
-		// check genre
-		String genreAttr = "";
-		if (mSelectedGenre >= 0) {
-			genreAttr = "&with_genres=" + mSelectedGenre;
-		}
-		// year
-		String yearAttr = "";
-		if (mSelectedReleaseYear >= 0) {
-			Year year = mYearList.get(mSelectedReleaseYear);
-			Log.d(TAG, year.getTitle());
-			if (year.getLowYear() == 0) {
-				yearAttr = "&primary_release_year=" + year.getHighYear();
-			} else {
-				yearAttr = "&primary_release_date.gte=" + year.getLowYear() + "-1-1&primary_release_date.lte=" + (year.getHighYear() - 1) + "-12-31";
+		String searchQuery = mSearchBox.getText().toString();
+		String url = "";
+		if (searchQuery.length() > 0) {
+			url = API_URL + "search/movie?api_key=" + API_KEY + "&query=" + searchQuery;
+		} else {
+			// check genre
+			String genreAttr = "";
+			if (mSelectedGenre >= 0) {
+				genreAttr = "&with_genres=" + mSelectedGenre;
 			}
+			// year
+			String yearAttr = "";
+			if (mSelectedReleaseYear >= 0) {
+				Year year = mYearList.get(mSelectedReleaseYear);
+				Log.d(TAG, year.getTitle());
+				if (year.getLowYear() == 0) {
+					yearAttr = "&primary_release_year=" + year.getHighYear();
+				} else {
+					yearAttr = "&primary_release_date.gte=" + year.getLowYear() + "-1-1&primary_release_date.lte=" + (year.getHighYear() - 1) + "-12-31";
+				}
+			}
+			// rating
+			String ratingAttr = "";
+			float rating = ((RatingBar) findViewById(R.id.ratingBar)).getRating();
+			ratingAttr = "&vote_average.gte=" + rating;
+			// vote count
+			String voteCount = "";
+			String numVotes = ((EditText) findViewById(R.id.voteCountEditText)).getText().toString();
+			Log.d(TAG, "number of votes: " + numVotes);
+			if (!numVotes.equals("")) {
+				voteCount = "&vote_count.gte=" + Integer.parseInt(numVotes);
+			}
+			// build string
+			url = API_URL + "discover/movie/?api_key=" + API_KEY + genreAttr + yearAttr + ratingAttr + voteCount;
 		}
-		// rating
-		String ratingAttr = "";
-		float rating = ((RatingBar) findViewById(R.id.ratingBar)).getRating();
-		ratingAttr = "&vote_average.gte=" + rating;
-		// vote count
-		String voteCount = "";
-		String numVotes = ((EditText) findViewById(R.id.voteCountEditText)).getText().toString();
-		Log.d(TAG, "number of votes: " + numVotes);
-		if (!numVotes.equals("")) {
-			voteCount = "&vote_count.gte=" + Integer.parseInt(numVotes);
-		}
-		// build string
-		String url = API_URL + "discover/movie/?api_key=" + API_KEY + genreAttr + yearAttr + ratingAttr + voteCount;
 		getMovieList(url, 1, true);
 	}
 

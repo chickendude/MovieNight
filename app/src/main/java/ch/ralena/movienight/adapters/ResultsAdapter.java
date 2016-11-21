@@ -150,20 +150,23 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 
 		@Override
 		public void onClick(View v) {
-			ImageView poster = (ImageView) v.findViewById(R.id.posterImageView);
+			if(MainActivity.isFilterOpen) {
+				mMainActivity.toggleFilters(v);
+			} else {
+				ImageView poster = (ImageView) v.findViewById(R.id.posterImageView);
 
-			TextView title = (TextView) v.findViewById(R.id.titleLabel);
-			Log.d(TAG, mPosition + " clicked.");
+				TextView title = (TextView) v.findViewById(R.id.titleLabel);
+				Log.d(TAG, mPosition + " clicked.");
 
-			Bundle bundle = new Bundle();
-			bundle.putString(MovieFragment.TITLE, title.getText().toString());
-			bundle.putString(MovieFragment.OVERVIEW, mResult.getOverview());
-			bundle.putString(MovieFragment.POSTERURL,mResult.getPosterPath());
-			bundle.putString(MovieFragment.RELEASE_DATE,mResult.getFormattedReleaseDate()+"");
-			MovieFragment dialog = new MovieFragment();
-			dialog.setArguments(bundle);
-			dialog.show(mMainActivity.getFragmentManager(), "error_dialog");
-
+				Bundle bundle = new Bundle();
+				bundle.putString(MovieFragment.TITLE, title.getText().toString());
+				bundle.putString(MovieFragment.OVERVIEW, mResult.getOverview());
+				bundle.putString(MovieFragment.POSTERURL, mResult.getPosterPath());
+				bundle.putString(MovieFragment.RELEASE_DATE, mResult.getFormattedReleaseDate() + "");
+				MovieFragment dialog = new MovieFragment();
+				dialog.setArguments(bundle);
+				dialog.show(mMainActivity.getFragmentManager(), "error_dialog");
+			}
 		}
 	}
 

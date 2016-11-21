@@ -7,24 +7,25 @@
 			  android:padding="5dp">
 
 	<ImageView
-		android:layout_width="match_parent"
+		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		app:srcCompat="@android:drawable/btn_star_big_on"
+		android:layout_gravity="center"
 		android:id="@+id/movieImageView"/>
 
+	<TextView
+		android:text="TextView"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:id="@+id/movieTitleLabel"
+		android:textAlignment="center"
+		android:textSize="18sp"
+		android:textStyle="normal|bold"/>
 	<LinearLayout
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:orientation="horizontal"
 		android:layout_gravity="center">
-		<TextView
-			android:text="TextView"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:id="@+id/movieTitleLabel"
-			android:textAlignment="center"
-			android:textSize="18sp"
-			android:textStyle="normal|bold"/>
 		<TextView
 			android:text=" ("
 			android:layout_width="wrap_content"
@@ -47,7 +48,7 @@
 
 	<TextView
 		android:text="TextView"
-		android:layout_width="match_parent"
+		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:id="@+id/movieSummaryLabel"/>
 </LinearLayout>

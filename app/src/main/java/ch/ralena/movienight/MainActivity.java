@@ -40,6 +40,7 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 	public static final String TAG = MainActivity.class.getSimpleName();
+	public static boolean isFilterOpen;
 
 	private String mResults;
 	private String mUrl;
@@ -48,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 	private boolean mCanLoadNewMovies;
 
+	private LinearLayout mFilterOptionsLayout;
+	private LinearLayout mFilterLayout;
 	// genres
 	private LinearLayout mGenreLayout;
 	private List<Genre> mGenreList;
@@ -70,6 +73,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		mFilterOptionsLayout = (LinearLayout) findViewById(R.id.filterOptionsLayout);
+		mFilterOptionsLayout.setVisibility(View.GONE);
+		mFilterLayout = (LinearLayout) findViewById(R.id.filterLayout);
+		isFilterOpen = false;
 		// prepare genre list
 		mGenreLayout = (LinearLayout) findViewById(R.id.genreLayout);
 		mGenreList = new ArrayList<>();
@@ -406,11 +414,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		// vote count
 		String voteCount = "";
 		String numVotes = ((EditText) findViewById(R.id.voteCountEditText)).getText().toString();
-		if (numVotes != "") {
+		Log.d(TAG, "number of votes: " + numVotes);
+		if (!numVotes.equals("")) {
 			voteCount = "&vote_count.gte=" + Integer.parseInt(numVotes);
 		}
 		// build string
 		String url = API_URL + "discover/movie/?api_key=" + API_KEY + genreAttr + yearAttr + ratingAttr + voteCount;
 		getMovieList(url, 1, true);
+	}
+
+	public void toggleFilters(View v) {
+		int visibility = mFilterOptionsLayout.getVisibility();
+		if (visibility == View.GONE) {
+			mFilterOptionsLayout.setVisibility(View.VISIBLE);
+			mFilterLayout.setBackground(getResources().getDrawable(R.drawable.filter_box_expanded));
+			isFilterOpen = true;
+		} else {
+			mFilterOptionsLayout.setVisibility(View.GONE);
+			mFilterLayout.setBackground(getResources().getDrawable(R.drawable.filter_box_collapsed));
+			isFilterOpen = false;
+		}
 	}
 }

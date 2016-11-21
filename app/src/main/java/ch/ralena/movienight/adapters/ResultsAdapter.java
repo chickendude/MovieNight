@@ -150,11 +150,9 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 
 		@Override
 		public void onClick(View v) {
-			if(MainActivity.isFilterOpen) {
+			if(mMainActivity.isFilterOpen) {
 				mMainActivity.toggleFilters(v);
 			} else {
-				ImageView poster = (ImageView) v.findViewById(R.id.posterImageView);
-
 				TextView title = (TextView) v.findViewById(R.id.titleLabel);
 				Log.d(TAG, mPosition + " clicked.");
 
@@ -163,6 +161,7 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 				bundle.putString(MovieFragment.OVERVIEW, mResult.getOverview());
 				bundle.putString(MovieFragment.POSTERURL, mResult.getPosterPath());
 				bundle.putString(MovieFragment.RELEASE_DATE, mResult.getFormattedReleaseDate() + "");
+				bundle.putDouble(MovieFragment.RATING, mResult.getVoteAverage());
 				MovieFragment dialog = new MovieFragment();
 				dialog.setArguments(bundle);
 				dialog.show(mMainActivity.getFragmentManager(), "error_dialog");

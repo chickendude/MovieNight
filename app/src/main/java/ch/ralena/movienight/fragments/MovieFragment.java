@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -29,6 +30,7 @@ public class MovieFragment extends DialogFragment {
 	public static final String OVERVIEW = "overview";
 	public static final String POSTERURL = "posterurl";
 	public static final String RELEASE_DATE = "releasedate";
+	public static final String RATING = "rating";
 
 	private ImageView mPosterImageView;
 
@@ -38,6 +40,7 @@ public class MovieFragment extends DialogFragment {
 		TextView titleTextView = (TextView) rootView.findViewById(R.id.movieTitleLabel);
 		TextView summaryTextView = (TextView) rootView.findViewById(R.id.movieSummaryLabel);
 		TextView releaseDateTextView = (TextView) rootView.findViewById(R.id.releaseDateLabel);
+		RatingBar ratingBar = (RatingBar) rootView.findViewById(R.id.ratingBar);
 		mPosterImageView = (ImageView) rootView.findViewById(R.id.movieImageView);
 
 		Bundle bundle = getArguments();
@@ -45,6 +48,8 @@ public class MovieFragment extends DialogFragment {
 		String overview = bundle.getString(OVERVIEW);
 		String posterUrl = bundle.getString(POSTERURL);
 		String releaseDate = bundle.getString(RELEASE_DATE);
+		double rating = bundle.getDouble(RATING);
+
 
 		String url = IMAGE_URL_BASE + "500" + posterUrl;
 		Log.d(TAG,url);
@@ -52,6 +57,7 @@ public class MovieFragment extends DialogFragment {
 		titleTextView.setText(title);
 		summaryTextView.setText(overview);
 		releaseDateTextView.setText(releaseDate);
+		ratingBar.setRating((float)rating);
 
 		Request request = new Request.Builder()
 				.url(url)

@@ -1,6 +1,5 @@
 package ch.ralena.movienight;
 
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -12,11 +11,9 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.CheckedTextView;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
-import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,7 +37,6 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 	public static final String TAG = MainActivity.class.getSimpleName();
-	public static boolean isFilterOpen;
 
 	private String mResults;
 	private String mUrl;
@@ -51,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 	private LinearLayout mFilterOptionsLayout;
 	private LinearLayout mFilterLayout;
+	public boolean isFilterOpen;
 	// genres
 	private LinearLayout mGenreLayout;
 	private List<Genre> mGenreList;
@@ -223,20 +220,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			Log.d(TAG, "Release Year changed");
 			mSelectedReleaseYear = tag;
 		}
-	}
-
-	public void setDate(View v) {
-		final TextView textView = (TextView) v;
-		Calendar calendar = Calendar.getInstance();
-		DatePickerDialog.OnDateSetListener odsl = new DatePickerDialog.OnDateSetListener() {
-			@Override
-			public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-				Log.d(TAG, "Date set");
-				textView.setText(month + "-" + dayOfMonth + "-" + year);
-			}
-		};
-		DatePickerDialog datePickerDialog = new DatePickerDialog(this, odsl, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-		datePickerDialog.show();
 	}
 
 	// default just pulls page one

@@ -29,8 +29,8 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:layout_alignParentBottom="true"
-		android:layout_marginTop="14sp"
-		android:layout_below="@+id/searchBoxEditText"/>
+		android:layout_below="@+id/searchBoxEditText"
+		android:layout_marginTop="14sp"/>
 
 	<LinearLayout
 		android:id="@+id/filterLayout"
@@ -42,17 +42,152 @@
 		android:background="@drawable/filter_box_collapsed"
 		android:orientation="vertical">
 
-		<CheckedTextView
-			android:id="@+id/filterButton"
-			android:layout_width="wrap_content"
+		<LinearLayout
+			android:id="@+id/filterSortLayout"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_gravity="right"
-			android:layout_margin="0dp"
-			android:onClick="toggleFilters"
-			android:padding="2dp"
-			android:text="filter"
-			android:textAlignment="center"
-			android:textColor="@color/colorHighlight"/>
+			android:orientation="horizontal">
+
+			<CheckedTextView
+				android:id="@+id/sortButton"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="left"
+				android:layout_margin="0dp"
+				android:layout_weight="1"
+				android:onClick="toggleSort"
+				android:padding="2dp"
+				android:text="sort"
+				android:textColor="@color/colorHighlight"/>
+
+			<CheckedTextView
+				android:id="@+id/filterButton"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="0dp"
+				android:layout_weight="1"
+				android:onClick="toggleFilters"
+				android:padding="2dp"
+				android:text="filter"
+				android:textAlignment="textEnd"
+				android:textColor="@color/colorHighlight"/>
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/sortLayout"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical">
+
+			<HorizontalScrollView
+				android:id="@+id/sortScrollView"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:scrollbars="none">
+
+				<LinearLayout
+					android:id="@+id/sortScrollLayout"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="horizontal">
+
+					<CheckedTextView
+						android:id="@+id/sortNoneButton"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_marginBottom="5dp"
+						android:layout_marginLeft="1dp"
+						android:layout_marginRight="1dp"
+						android:layout_weight="1"
+						android:background="@drawable/genre_button"
+						android:checked="true"
+						android:onClick="onClick"
+						android:tag="0"
+						android:text="none"
+						android:textAllCaps="false"
+						android:textColor="@color/genre_button_text"/>
+
+					<CheckedTextView
+						android:id="@+id/sortRatingButton"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_marginBottom="5dp"
+						android:layout_marginLeft="1dp"
+						android:layout_marginRight="1dp"
+						android:layout_weight="1"
+						android:background="@drawable/genre_button"
+						android:onClick="onClick"
+						android:tag="1"
+						android:text="rating"
+						android:textAllCaps="false"
+						android:textColor="@color/genre_button_text"/>
+
+					<CheckedTextView
+						android:id="@+id/sortVotesButton"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_marginBottom="5dp"
+						android:layout_marginLeft="1dp"
+						android:layout_marginRight="1dp"
+						android:layout_weight="1"
+						android:background="@drawable/genre_button"
+						android:checked="false"
+						android:onClick="onClick"
+						android:tag="2"
+						android:text="votes"
+						android:textAllCaps="false"
+						android:textColor="@color/genre_button_text"/>
+
+					<CheckedTextView
+						android:id="@+id/sortPopularityButton"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_marginBottom="5dp"
+						android:layout_marginLeft="1dp"
+						android:layout_marginRight="1dp"
+						android:layout_weight="1"
+						android:background="@drawable/genre_button"
+						android:checked="false"
+						android:onClick="onClick"
+						android:tag="3"
+						android:text="popularity"
+						android:textAllCaps="false"
+						android:textColor="@color/genre_button_text"/>
+
+					<CheckedTextView
+						android:id="@+id/sortReleaseDateButton"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_marginBottom="5dp"
+						android:layout_marginLeft="1dp"
+						android:layout_marginRight="1dp"
+						android:layout_weight="1"
+						android:background="@drawable/genre_button"
+						android:checked="false"
+						android:onClick="onClick"
+						android:tag="4"
+						android:text="release date"
+						android:textAllCaps="false"
+						android:textColor="@color/genre_button_text"/>
+
+					<CheckedTextView
+						android:id="@+id/sortRevenueButton"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_marginBottom="5dp"
+						android:layout_marginLeft="1dp"
+						android:layout_marginRight="1dp"
+						android:layout_weight="1"
+						android:background="@drawable/genre_button"
+						android:checked="false"
+						android:onClick="onClick"
+						android:tag="5"
+						android:text="revenue"
+						android:textAllCaps="false"
+						android:textColor="@color/genre_button_text"/>
+				</LinearLayout>
+			</HorizontalScrollView>
+		</LinearLayout>
 
 		<LinearLayout
 			android:id="@+id/filterOptionsLayout"

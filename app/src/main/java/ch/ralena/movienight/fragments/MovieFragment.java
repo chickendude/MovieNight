@@ -1,6 +1,7 @@
 package ch.ralena.movienight.fragments;
 
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ public class MovieFragment extends DialogFragment {
 	public static final String RATING = "rating";
 
 	private ImageView mPosterImageView;
+	private Call mCall;
 
 	@Override
 	public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
@@ -61,8 +63,8 @@ public class MovieFragment extends DialogFragment {
 		Request request = new Request.Builder()
 				.url(url)
 				.build();
-		Call call = MainActivity.client.newCall(request);
-		call.enqueue(new Callback() {
+		mCall = MainActivity.client.newCall(request);
+		mCall.enqueue(new Callback() {
 			@Override
 			public void onFailure(Call call, IOException e) {
 				Log.d(TAG,"Failed loading fragment poster");
@@ -75,12 +77,17 @@ public class MovieFragment extends DialogFragment {
 					InputStream input = response.body().byteStream();
 					final Bitmap poster = BitmapFactory.decodeStream(input);
 					if (poster != null) {
-						getActivity().runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								mPosterImageView.setImageBitmap(poster);
-							}
-						});
+						try {
+							getActivity().runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									mPosterImageView.setImageBitmap(poster);
+								}
+							});
+						} catch (NullPointerException npe) {
+							Log.d(TAG, "Window was closed before poster loaded");
+							npe.printStackTrace();
+						}
 					}
 				}
 			}
@@ -88,5 +95,12 @@ public class MovieFragment extends DialogFragment {
 
 
 		return rootView;
+	}
+
+	@Override
+	public void onDismiss(DialogInterface dialog) {
+		super.onDismiss(dialog);
+		Log.d(TAG, "Cancelling call " + mCall);
+		mCall.cancel();
 	}
 }

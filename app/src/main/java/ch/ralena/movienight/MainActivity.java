@@ -1,6 +1,7 @@
 package ch.ralena.movienight;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -49,12 +50,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 	private EditText mSearchBox;
 	private LinearLayout mFilterOptionsLayout;
+	private LinearLayout mSortLayout;
 	private LinearLayout mFilterLayout;
-	public boolean isFilterOpen;
-	// genres
+	private CheckedTextView mFilterButton;
 	private LinearLayout mGenreLayout;
+	private CheckedTextView mSortButton;
+
+	public boolean isFilterOpen;
+
+	// genres
 	private List<Genre> mGenreList;
 	private int mSelectedGenre;
+	private int mSelectedSort;
 
 	// release year
 	private LinearLayout mReleaseYearLayout;
@@ -97,7 +104,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		});
 		mFilterOptionsLayout = (LinearLayout) findViewById(R.id.filterOptionsLayout);
 		mFilterOptionsLayout.setVisibility(View.GONE);
+		mSortLayout = (LinearLayout) findViewById(R.id.sortLayout);
+		mSortLayout.setVisibility(View.GONE);
 		mFilterLayout = (LinearLayout) findViewById(R.id.filterLayout);
+		mFilterButton = (CheckedTextView) findViewById(R.id.filterButton);
+		mSortButton = (CheckedTextView) findViewById(R.id.sortButton);
 		isFilterOpen = false;
 		// prepare genre list
 		mGenreLayout = (LinearLayout) findViewById(R.id.genreLayout);
@@ -243,6 +254,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		} else if (listHolder == mReleaseYearLayout) {
 			Log.d(TAG, "Release Year changed");
 			mSelectedReleaseYear = tag;
+		} else if (listHolder == mSortLayout) {
+			Log.d(TAG, "Sort type changed");
+			mSelectedSort = tag;
 		}
 	}
 
@@ -437,15 +451,55 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	}
 
 	public void toggleFilters(View v) {
+		hideSort();
 		int visibility = mFilterOptionsLayout.getVisibility();
 		if (visibility == View.GONE) {
-			mFilterOptionsLayout.setVisibility(View.VISIBLE);
-			mFilterLayout.setBackground(getResources().getDrawable(R.drawable.filter_box_expanded));
-			isFilterOpen = true;
+			showFilters();
 		} else {
-			mFilterOptionsLayout.setVisibility(View.GONE);
-			mFilterLayout.setBackground(getResources().getDrawable(R.drawable.filter_box_collapsed));
-			isFilterOpen = false;
+			hideFilters();
 		}
+	}
+
+	private void showFilters() {
+		mFilterOptionsLayout.setVisibility(View.VISIBLE);
+		mFilterLayout.setBackground(getResources().getDrawable(R.drawable.filter_box_expanded));
+		mFilterButton.setTypeface(null, Typeface.BOLD);
+		isFilterOpen = true;
+	}
+
+	public void hideFilterSort() {
+		hideFilters();
+		hideSort();
+	}
+
+	private void hideFilters() {
+		mFilterOptionsLayout.setVisibility(View.GONE);
+		mFilterLayout.setBackground(getResources().getDrawable(R.drawable.filter_box_collapsed));
+		mFilterButton.setTypeface(null, Typeface.NORMAL);
+		isFilterOpen = false;
+	}
+
+	public void toggleSort(View v) {
+		hideFilters();
+		int visibility = mSortLayout.getVisibility();
+		if (visibility == View.GONE) {
+			showSort();
+		} else {
+			hideSort();
+		}
+	}
+
+	private void hideSort() {
+		mSortLayout.setVisibility(View.GONE);
+		mFilterLayout.setBackground(getResources().getDrawable(R.drawable.filter_box_collapsed));
+		mSortButton.setTypeface(null, Typeface.NORMAL);
+		isFilterOpen = false;
+	}
+
+	private void showSort() {
+		mSortLayout.setVisibility(View.VISIBLE);
+		mFilterLayout.setBackground(getResources().getDrawable(R.drawable.filter_box_expanded));
+		mSortButton.setTypeface(null, Typeface.BOLD);
+		isFilterOpen = true;
 	}
 }

@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	private EditText mSearchBox;
 	private LinearLayout mFilterOptionsLayout;
 	private LinearLayout mSortLayout;
+	private LinearLayout mSortScrollLayout;
 	private LinearLayout mFilterLayout;
 	private CheckedTextView mFilterButton;
 	private LinearLayout mGenreLayout;
@@ -75,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	public static final String API_URL = "https://api.themoviedb.org/3/";
 	public static final String API_KEY = "e924bfb7ddb531cb8116f491052edfdd";
 	public static final OkHttpClient client = new OkHttpClient();
+	public Call mCall;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		});
 		mFilterOptionsLayout = (LinearLayout) findViewById(R.id.filterOptionsLayout);
 		mFilterOptionsLayout.setVisibility(View.GONE);
+		mSortScrollLayout = (LinearLayout) findViewById(R.id.sortScrollLayout);
 		mSortLayout = (LinearLayout) findViewById(R.id.sortLayout);
 		mSortLayout.setVisibility(View.GONE);
 		mFilterLayout = (LinearLayout) findViewById(R.id.filterLayout);
@@ -150,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			CheckedTextView button = new CheckedTextView(MainActivity.this);
 			button.setText(year.getTitle());
 			button.setTextColor(getResources().getColorStateList(R.color.genre_button_text));
+			button.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
 			button.setBackground(getResources().getDrawable(R.drawable.genre_button));
 			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 			int marginH = (int) TypedValue.applyDimension(
@@ -231,6 +235,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 					button.setLayoutParams(lp);
 					button.setOnClickListener(MainActivity.this);
 					button.setTag(genre.getId());
+					button.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
 					mGenreLayout.addView(button);
 				}
 			}
@@ -248,16 +253,57 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		}
 		button.setChecked(true);
 		int tag = Integer.parseInt(button.getTag().toString());
+		LinearLayout l1 = listHolder;
+		LinearLayout l2 = mSortLayout;
+
 		if (listHolder == mGenreLayout) {
 			Log.d(TAG, "Genre changed");
 			mSelectedGenre = tag;
 		} else if (listHolder == mReleaseYearLayout) {
 			Log.d(TAG, "Release Year changed");
 			mSelectedReleaseYear = tag;
-		} else if (listHolder == mSortLayout) {
+		} else if (listHolder == mSortScrollLayout) {
 			Log.d(TAG, "Sort type changed");
 			mSelectedSort = tag;
+			changeSortMethod();
 		}
+	}
+
+	private void changeSortMethod() {
+//		mUrl += getSortUrl();
+		Log.d(TAG, mUrl);
+		View v = new View(this);
+		newSearch(v);
+	}
+
+	private String getSortUrl() {
+		String sortBy = "&sort_by=";
+		String sortOrder = ".desc";
+		if (mUrl.contains(sortBy)) {
+			int sortStart = mUrl.indexOf(sortBy);
+			mUrl = mUrl.substring(0, sortStart);
+		}
+
+		switch (mSelectedSort) {
+			case 0:
+				sortBy += "popularity";
+				break;
+			case 1:
+				sortBy += "vote_average";
+				break;
+			case 2:
+				sortBy += "vote_count";
+				break;
+			case 3:
+				sortBy += "release_date";
+				break;
+			case 4:
+				sortBy += "revenue";
+				break;
+			default:
+				sortBy="";
+		}
+		return sortBy + sortOrder;
 	}
 
 	// default just pulls page one
@@ -268,6 +314,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 	// pulls url and refreshes screen if it's a new search
 	public void getMovieList(String url, int page, final boolean isNewSearch) {
+		if(mCall != null) {
+			mCall.cancel();
+		}
 		mUrl = url;
 		if (isNetworkAvailable()) {
 			url += "&page=" + page;
@@ -275,7 +324,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			Request request = new Request.Builder()
 					.url(url)
 					.build();
-			client.newCall(request).enqueue(new Callback() {
+			mCall = client.newCall(request);
+			mCall.enqueue(new Callback() {
 				@Override
 				public void onFailure(Call call, IOException e) {
 					Log.d(TAG, "Seems there was an error with the URL.");
@@ -445,7 +495,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				voteCount = "&vote_count.gte=" + Integer.parseInt(numVotes);
 			}
 			// build string
-			url = API_URL + "discover/movie/?api_key=" + API_KEY + genreAttr + yearAttr + ratingAttr + voteCount;
+			url = API_URL + "discover/movie/?api_key=" + API_KEY + genreAttr + yearAttr + ratingAttr + voteCount + getSortUrl();
 		}
 		getMovieList(url, 1, true);
 	}

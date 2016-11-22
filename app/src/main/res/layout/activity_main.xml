@@ -26,12 +26,12 @@
 
 	<android.support.v7.widget.RecyclerView
 		android:id="@+id/resultsRecyclerView"
-		android:scrollbars="vertical"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:layout_alignParentBottom="true"
 		android:layout_below="@+id/searchBoxEditText"
-		android:layout_marginTop="14sp"/>
+		android:layout_marginTop="14sp"
+		android:scrollbars="vertical"/>
 
 	<LinearLayout
 		android:id="@+id/filterLayout"
@@ -47,6 +47,8 @@
 			android:id="@+id/filterSortLayout"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:layout_marginTop="3dp"
+			android:layout_marginBottom="3dp"
 			android:orientation="horizontal">
 
 			<CheckedTextView
@@ -59,7 +61,8 @@
 				android:onClick="toggleSort"
 				android:padding="2dp"
 				android:text="sort"
-				android:textColor="@color/colorHighlight"/>
+				android:textColor="@color/colorHighlight"
+				android:textSize="20sp"/>
 
 			<CheckedTextView
 				android:id="@+id/filterButton"
@@ -71,11 +74,14 @@
 				android:padding="2dp"
 				android:text="filter"
 				android:textAlignment="textEnd"
-				android:textColor="@color/colorHighlight"/>
+				android:textColor="@color/colorHighlight"
+				android:textSize="20sp"/>
 		</LinearLayout>
 
 		<LinearLayout
 			android:id="@+id/sortLayout"
+			android:layout_marginTop="3dp"
+			android:layout_marginBottom="3dp"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:orientation="vertical">
@@ -104,9 +110,10 @@
 						android:checked="true"
 						android:onClick="onClick"
 						android:tag="0"
-						android:text="none"
+						android:text="popularity"
 						android:textAllCaps="false"
-						android:textColor="@color/genre_button_text"/>
+						android:textColor="@color/genre_button_text"
+						android:textSize="18sp"/>
 
 					<CheckedTextView
 						android:id="@+id/sortRatingButton"
@@ -121,7 +128,8 @@
 						android:tag="1"
 						android:text="rating"
 						android:textAllCaps="false"
-						android:textColor="@color/genre_button_text"/>
+						android:textColor="@color/genre_button_text"
+						android:textSize="18sp"/>
 
 					<CheckedTextView
 						android:id="@+id/sortVotesButton"
@@ -137,23 +145,8 @@
 						android:tag="2"
 						android:text="votes"
 						android:textAllCaps="false"
-						android:textColor="@color/genre_button_text"/>
-
-					<CheckedTextView
-						android:id="@+id/sortPopularityButton"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_marginBottom="5dp"
-						android:layout_marginLeft="1dp"
-						android:layout_marginRight="1dp"
-						android:layout_weight="1"
-						android:background="@drawable/genre_button"
-						android:checked="false"
-						android:onClick="onClick"
-						android:tag="3"
-						android:text="popularity"
-						android:textAllCaps="false"
-						android:textColor="@color/genre_button_text"/>
+						android:textColor="@color/genre_button_text"
+						android:textSize="18sp"/>
 
 					<CheckedTextView
 						android:id="@+id/sortReleaseDateButton"
@@ -166,10 +159,11 @@
 						android:background="@drawable/genre_button"
 						android:checked="false"
 						android:onClick="onClick"
-						android:tag="4"
+						android:tag="3"
 						android:text="release date"
 						android:textAllCaps="false"
-						android:textColor="@color/genre_button_text"/>
+						android:textColor="@color/genre_button_text"
+						android:textSize="18sp"/>
 
 					<CheckedTextView
 						android:id="@+id/sortRevenueButton"
@@ -182,10 +176,11 @@
 						android:background="@drawable/genre_button"
 						android:checked="false"
 						android:onClick="onClick"
-						android:tag="5"
+						android:tag="4"
 						android:text="revenue"
 						android:textAllCaps="false"
-						android:textColor="@color/genre_button_text"/>
+						android:textColor="@color/genre_button_text"
+						android:textSize="18sp"/>
 				</LinearLayout>
 			</HorizontalScrollView>
 		</LinearLayout>
@@ -203,6 +198,8 @@
 				android:scrollbars="none">
 
 				<LinearLayout
+					android:layout_marginTop="3dp"
+					android:layout_marginBottom="3dp"
 					android:id="@+id/genreLayout"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
@@ -210,7 +207,7 @@
 
 					<CheckedTextView
 						android:id="@+id/allButton"
-						android:layout_width="wrap_content"
+						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_marginBottom="2dp"
 						android:layout_marginLeft="1dp"
@@ -222,6 +219,7 @@
 						android:onClick="onClick"
 						android:tag="-1"
 						android:text="@string/all_button_text"
+						android:textSize="18sp"
 						android:textAllCaps="false"
 						android:textColor="@color/genre_button_text"/>
 				</LinearLayout>
@@ -234,6 +232,8 @@
 				android:scrollbars="none">
 
 				<LinearLayout
+					android:layout_marginTop="3dp"
+					android:layout_marginBottom="3dp"
 					android:id="@+id/releaseYearLayout"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
@@ -252,6 +252,7 @@
 						android:onClick="onClick"
 						android:tag="-1"
 						android:text="@string/all_button_text"
+						android:textSize="18sp"
 						android:textAllCaps="false"
 						android:textColor="@color/genre_button_text"/>
 				</LinearLayout>

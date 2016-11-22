@@ -10,7 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -76,7 +76,7 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 	public class ResultsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
 		public ImageView mPosterImageView;
-		public ProgressBar mPosterLoadingIcon;
+		public LinearLayout mPosterLoadingIconLayout;
 		public TextView mTitleLabel;
 		public int mPosition;
 		public SearchResult mResult;
@@ -84,7 +84,7 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 		public ResultsViewHolder(View itemView) {
 			super(itemView);
 			mPosterImageView = (ImageView) itemView.findViewById(R.id.posterImageView);
-			mPosterLoadingIcon = (ProgressBar) itemView.findViewById(R.id.posterLoadingIcon);
+			mPosterLoadingIconLayout = (LinearLayout) itemView.findViewById(R.id.posterLoadingIconLayout);
 			mTitleLabel = (TextView) itemView.findViewById(R.id.titleLabel);
 			itemView.setOnClickListener(this);
 		}
@@ -97,12 +97,18 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 			mPosition = position;
 			if (bitmap != null) {
 				mPosterImageView.setImageBitmap(bitmap);
-				mPosterLoadingIcon.setVisibility(View.GONE);
+				mPosterLoadingIconLayout.setVisibility(View.GONE);
 				mPosterImageView.setVisibility(View.VISIBLE);
 			} else {
-				mPosterLoadingIcon.setVisibility(View.VISIBLE);
-				mPosterImageView.setVisibility(View.GONE);
-				downloadPoster(result);
+				if(mResult.getPosterPath().equals("null")) {
+					mPosterLoadingIconLayout.setVisibility(View.GONE);
+					mPosterImageView.setVisibility(View.VISIBLE);
+					mPosterImageView.setImageResource(R.mipmap.poster_not_found_small);
+				} else {
+					mPosterLoadingIconLayout.setVisibility(View.VISIBLE);
+					mPosterImageView.setVisibility(View.GONE);
+					downloadPoster(result);
+				}
 			}
 		}
 
@@ -134,7 +140,7 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 									@Override
 									public void run() {
 										// hide loading icon and show poster
-										mPosterLoadingIcon.setVisibility(View.GONE);
+										mPosterLoadingIconLayout.setVisibility(View.GONE);
 										mPosterImageView.setVisibility(View.VISIBLE);
 										mPosterImageView.setImageBitmap(poster);
 									}
@@ -143,6 +149,14 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 						} // poster
 					} else {
 						Log.e(TAG, "Response was not successful");
+						mMainActivity.runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								mPosterLoadingIconLayout.setVisibility(View.GONE);
+								mPosterImageView.setVisibility(View.VISIBLE);
+								mPosterImageView.setImageResource(R.mipmap.poster_not_found_small);
+							}
+						});
 					} // response
 				}
 			});
@@ -162,6 +176,7 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 				bundle.putString(MovieFragment.POSTERURL, mResult.getPosterPath());
 				bundle.putString(MovieFragment.RELEASE_DATE, mResult.getFormattedReleaseDate() + "");
 				bundle.putDouble(MovieFragment.RATING, mResult.getVoteAverage());
+				bundle.putInt(MovieFragment.VOTE_COUNT, mResult.getVoteCount());
 				MovieFragment dialog = new MovieFragment();
 				dialog.setArguments(bundle);
 				dialog.show(mMainActivity.getFragmentManager(), "error_dialog");

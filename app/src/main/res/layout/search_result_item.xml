@@ -11,29 +11,37 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_centerInParent="true"
+		android:layout_gravity="center_horizontal"
 		android:layout_margin="4dp"
 		android:gravity="center_horizontal"
 		android:orientation="vertical">
 
-		<ProgressBar
-			style="?android:attr/progressBarStyleSmall"
+		<LinearLayout
+			android:id="@+id/posterLoadingIconLayout"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:id="@+id/posterLoadingIcon"/>
+			android:layout_height="190dp">
+			<ProgressBar
+				android:id="@+id/posterLoadingIcon"
+				style="?android:attr/progressBarStyleSmall"
+				android:layout_gravity="center"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"/>
+		</LinearLayout>
+
 
 		<ImageView
 			android:id="@+id/posterImageView"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center_horizontal"
-			android:width="342px"/>
+			android:layout_width="match_parent"
+			android:layout_height="190dp"
+			android:scaleType="fitXY"
+			android:adjustViewBounds="true"/>
 
 		<TextView
 			android:id="@+id/titleLabel"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:background="@drawable/movie_title_border"
 			android:width="342px"
+			android:background="@drawable/movie_title_border"
 			android:textAlignment="center"
 			android:textSize="18sp"
 			tools:text="Movie Title"/>

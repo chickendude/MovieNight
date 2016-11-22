@@ -32,6 +32,7 @@ public class MovieFragment extends DialogFragment {
 	public static final String POSTERURL = "posterurl";
 	public static final String RELEASE_DATE = "releasedate";
 	public static final String RATING = "rating";
+	public static final String VOTE_COUNT = "votecount";
 
 	private ImageView mPosterImageView;
 	private Call mCall;
@@ -42,6 +43,7 @@ public class MovieFragment extends DialogFragment {
 		TextView titleTextView = (TextView) rootView.findViewById(R.id.movieTitleLabel);
 		TextView summaryTextView = (TextView) rootView.findViewById(R.id.movieSummaryLabel);
 		TextView releaseDateTextView = (TextView) rootView.findViewById(R.id.releaseDateLabel);
+		TextView voteCountTextView = (TextView) rootView.findViewById(R.id.voteCountLabel);
 		RatingBar ratingBar = (RatingBar) rootView.findViewById(R.id.ratingBar);
 		mPosterImageView = (ImageView) rootView.findViewById(R.id.movieImageView);
 
@@ -51,6 +53,7 @@ public class MovieFragment extends DialogFragment {
 		String posterUrl = bundle.getString(POSTERURL);
 		String releaseDate = bundle.getString(RELEASE_DATE);
 		double rating = bundle.getDouble(RATING);
+		int voteCount = bundle.getInt(VOTE_COUNT);
 
 		String url = IMAGE_URL_BASE + "500" + posterUrl;
 		Log.d(TAG,url);
@@ -59,6 +62,8 @@ public class MovieFragment extends DialogFragment {
 		summaryTextView.setText(overview);
 		releaseDateTextView.setText(releaseDate);
 		ratingBar.setRating((float)rating);
+		String votes = voteCount + " vote" + (voteCount == 1 ? "" : "s");
+		voteCountTextView.setText(votes);
 
 		Request request = new Request.Builder()
 				.url(url)

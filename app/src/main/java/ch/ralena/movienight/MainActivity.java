@@ -288,12 +288,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 						throw new IOException("Error: " + response);
 					} else {
 						try {
+							mCanLoadNewMovies = true;
 							mResults = response.body().string();
 							Log.d(TAG, mResults);
 							if (isNewSearch)
 								mAdapter = null;
 							unpackResults(mResults);
-							mCanLoadNewMovies = true;
 						} catch (JSONException e) {
 							e.printStackTrace();
 						}
@@ -322,7 +322,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 								int totalItemCount = mGridLayoutManager.getItemCount();
 								int pastVisiblesItems = mGridLayoutManager.findFirstVisibleItemPosition();
 
-								if ((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
+								if ((visibleItemCount + pastVisiblesItems) >= totalItemCount - 4) {
 									mCanLoadNewMovies = false;
 									Log.v(TAG, "Load new movies");
 									getMovieList(mUrl, mSearchResults.getCurPage() + 1, false);

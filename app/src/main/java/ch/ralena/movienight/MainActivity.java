@@ -14,9 +14,11 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.CheckedTextView;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
+import android.widget.Switch;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,6 +42,8 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 	public static final String TAG = MainActivity.class.getSimpleName();
+	public static final String MOVIE_URL = "discover/movie/?api_key=";
+	public static final String TV_URL = "discover/tv?api_key=";
 
 	private String mResults;
 	private String mUrl;
@@ -57,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	private LinearLayout mGenreLayout;
 	private CheckedTextView mSortButton;
 
-	public boolean isFilterOpen;
+	public boolean mIsFilterOpen;
 
 	// genres
 	private List<Genre> mGenreList;
@@ -69,6 +73,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	private int mSelectedReleaseYear;
 	private List<Year> mYearList;
 
+	private Switch mSourceSwitch;
+	private boolean mIsMovies;
 	private RecyclerView mRecyclerView;
 	private GridLayoutManager mGridLayoutManager;
 
@@ -104,6 +110,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 			}
 		});
+		mSourceSwitch = (Switch) findViewById(R.id.sourceSwitch);
+		mSourceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				Switch sourceSwitch = (Switch) buttonView;
+				String text = isChecked ? sourceSwitch.getTextOn().toString() : sourceSwitch.getTextOff().toString();
+				buttonView.setText(text);
+				mIsMovies = isChecked;
+				changeSortMethod();
+			}
+		});
+		mSourceSwitch.setChecked(true);
+		mIsMovies = true;
 		mFilterOptionsLayout = (LinearLayout) findViewById(R.id.filterOptionsLayout);
 		mFilterOptionsLayout.setVisibility(View.GONE);
 		mSortScrollLayout = (LinearLayout) findViewById(R.id.sortScrollLayout);
@@ -112,7 +131,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		mFilterLayout = (LinearLayout) findViewById(R.id.filterLayout);
 		mFilterButton = (CheckedTextView) findViewById(R.id.filterButton);
 		mSortButton = (CheckedTextView) findViewById(R.id.sortButton);
-		isFilterOpen = false;
+
+		mIsFilterOpen = false;
 		// prepare genre list
 		mGenreLayout = (LinearLayout) findViewById(R.id.genreLayout);
 		mGenreList = new ArrayList<>();
@@ -270,7 +290,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	}
 
 	private void changeSortMethod() {
-//		mUrl += getSortUrl();
 		Log.d(TAG, mUrl);
 		View v = new View(this);
 		newSearch(v);
@@ -308,7 +327,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 	// default just pulls page one
 	public void getMovieList() {
-		String url = API_URL + "discover/movie/?api_key=" + API_KEY;
+		String url = API_URL + (mIsMovies ? MOVIE_URL : TV_URL) + API_KEY;
 		getMovieList(url, 1, true);
 	}
 
@@ -399,14 +418,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		mSearchResults.setTotalResults(totalResults);
 
 		for (int i = 0; i < jsonArray.length(); i++) {
+			// these objects change depending on whether we're looking at movies or TV shows
+			String TITLE = mIsMovies ? "title" : "name";
+			String DATE = mIsMovies ? "release_date" : "first_air_date";
+			// extract json object into searchresult object
 			JSONObject movie = jsonArray.getJSONObject(i);
 			String posterPath = movie.getString("poster_path");
-			String title = movie.getString("title");
+			String title = movie.getString(TITLE);
 			String originalLanguage = movie.getString("original_language");
-			String originalTitle = movie.getString("original_title");
+			String originalTitle = movie.getString("original_" + TITLE);
 			String overview = movie.getString("overview");
-			String releaseDate = movie.getString("release_date");
-			boolean isAdult = movie.getBoolean("adult");
+			String releaseDate = movie.getString(DATE);
+			boolean isAdult = mIsMovies && movie.getBoolean("adult");
 			int id = movie.getInt("id");
 			int voteCount = movie.getInt("vote_count");
 			// pull out the genre ids
@@ -495,7 +518,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				voteCount = "&vote_count.gte=" + Integer.parseInt(numVotes);
 			}
 			// build string
-			url = API_URL + "discover/movie/?api_key=" + API_KEY + genreAttr + yearAttr + ratingAttr + voteCount + getSortUrl();
+			url = API_URL + (mIsMovies ? MOVIE_URL : TV_URL) + API_KEY + genreAttr + yearAttr + ratingAttr + voteCount + getSortUrl();
 		}
 		getMovieList(url, 1, true);
 	}
@@ -514,7 +537,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		mFilterOptionsLayout.setVisibility(View.VISIBLE);
 		mFilterLayout.setBackground(getResources().getDrawable(R.drawable.filter_box_expanded));
 		mFilterButton.setTypeface(null, Typeface.BOLD);
-		isFilterOpen = true;
+		mIsFilterOpen = true;
 	}
 
 	public void hideFilterSort() {
@@ -526,7 +549,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		mFilterOptionsLayout.setVisibility(View.GONE);
 		mFilterLayout.setBackground(getResources().getDrawable(R.drawable.filter_box_collapsed));
 		mFilterButton.setTypeface(null, Typeface.NORMAL);
-		isFilterOpen = false;
+		mIsFilterOpen = false;
 	}
 
 	public void toggleSort(View v) {
@@ -543,13 +566,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		mSortLayout.setVisibility(View.GONE);
 		mFilterLayout.setBackground(getResources().getDrawable(R.drawable.filter_box_collapsed));
 		mSortButton.setTypeface(null, Typeface.NORMAL);
-		isFilterOpen = false;
+		mIsFilterOpen = false;
 	}
 
 	private void showSort() {
 		mSortLayout.setVisibility(View.VISIBLE);
 		mFilterLayout.setBackground(getResources().getDrawable(R.drawable.filter_box_expanded));
 		mSortButton.setTypeface(null, Typeface.BOLD);
-		isFilterOpen = true;
+		mIsFilterOpen = true;
 	}
 }

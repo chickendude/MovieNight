@@ -58,11 +58,21 @@
 				android:layout_gravity="left"
 				android:layout_margin="0dp"
 				android:layout_weight="1"
+				android:checked="false"
 				android:onClick="toggleSort"
 				android:padding="2dp"
 				android:text="sort"
 				android:textColor="@color/colorHighlight"
 				android:textSize="20sp"/>
+
+			<Switch
+				android:id="@+id/sourceSwitch"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:checked="true"
+				android:text="movie"
+				android:textOff="tv"
+				android:textOn="movie"/>
 
 			<CheckedTextView
 				android:id="@+id/filterButton"
@@ -311,8 +321,8 @@
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
 		android:layout_centerInParent="true"
-		android:textSize="18sp"
-		android:text="Powered (but not endorsed) by TMDb."/>
+		android:text="Powered (but not endorsed) by TMDb."
+		android:textSize="18sp"/>
 
 	<ImageView
 		android:id="@+id/imageView"
@@ -320,7 +330,7 @@
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
 		android:layout_alignTop="@id/attributionLabel"
-		app:srcCompat="@mipmap/tmdb"
-		android:layout_toStartOf="@+id/attributionLabel"/>
+		android:layout_toStartOf="@+id/attributionLabel"
+		app:srcCompat="@mipmap/tmdb"/>
 
 </RelativeLayout>

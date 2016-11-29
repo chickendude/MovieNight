@@ -164,7 +164,7 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 
 		@Override
 		public void onClick(View v) {
-			if(mMainActivity.isFilterOpen) {
+			if(mMainActivity.mIsFilterOpen) {
 				mMainActivity.hideFilterSort();
 			} else {
 				TextView title = (TextView) v.findViewById(R.id.titleLabel);

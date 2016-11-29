@@ -144,7 +144,11 @@ public class SearchResult {
 	}
 
 	public String getFormattedReleaseDate() {
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		return df.format(mReleaseDate);
+		if (mReleaseDate == null) {
+			return "No date listed";
+		} else {
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			return df.format(mReleaseDate);
+		}
 	}
 }

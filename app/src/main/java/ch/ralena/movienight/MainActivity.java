@@ -120,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 				String text = isChecked ? sourceSwitch.getTextOn().toString() : sourceSwitch.getTextOff().toString();
 				buttonView.setText(text);
 				mIsMovies = isChecked;
+				getGenreList();
 				changeSortMethod();
 			}
 		});
@@ -138,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		mIsFilterOpen = false;
 		// prepare genre list
 		mGenreLayout = (LinearLayout) findViewById(R.id.genreLayout);
-		mGenreList = new ArrayList<>();
 		mSelectedGenre = -1;
 
 		mReleaseYearLayout = (LinearLayout) findViewById(R.id.releaseYearLayout);
@@ -198,8 +198,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	private void getGenreList() {
 		CheckedTextView allButton = (CheckedTextView) findViewById(R.id.allButton);
 		allButton.setChecked(true);
+		mGenreLayout.removeAllViews();
+		mGenreLayout.addView(allButton);
 		if (isNetworkAvailable()) {
-			String url = API_URL + "genre/movie/list?api_key=" + API_KEY;
+			String url = API_URL + "genre/" + (mIsMovies ? "movie" : "tv") + "/list?api_key=" + API_KEY;
 			Log.d(TAG, url);
 			Request request = new Request.Builder()
 					.url(url)
@@ -229,6 +231,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	}
 
 	private void unpackGenres(String string) throws JSONException {
+		mGenreList = new ArrayList<>();
 		JSONObject jsonResult = new JSONObject(string);
 		JSONArray genreResults = jsonResult.getJSONArray("genres");
 		for (int i = 0; i < genreResults.length(); i++) {

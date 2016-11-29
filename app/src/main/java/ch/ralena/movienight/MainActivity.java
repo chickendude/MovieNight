@@ -17,6 +17,7 @@ import android.widget.CheckedTextView;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.Switch;
 
@@ -74,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	private List<Year> mYearList;
 
 	private Switch mSourceSwitch;
+	private ProgressBar mLoadingNewSearchIcon;
 	private boolean mIsMovies;
 	private RecyclerView mRecyclerView;
 	private GridLayoutManager mGridLayoutManager;
@@ -122,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 			}
 		});
 		mSourceSwitch.setChecked(true);
+		mLoadingNewSearchIcon = (ProgressBar) findViewById(R.id.loadingNewSearchIcon);
 		mIsMovies = true;
 		mFilterOptionsLayout = (LinearLayout) findViewById(R.id.filterOptionsLayout);
 		mFilterOptionsLayout.setVisibility(View.GONE);
@@ -338,6 +341,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		}
 		mUrl = url;
 		if (isNetworkAvailable()) {
+			mLoadingNewSearchIcon.setVisibility(View.VISIBLE);
 			url += "&page=" + page;
 			Log.d(TAG, url);
 			Request request = new Request.Builder()
@@ -363,6 +367,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 							if (isNewSearch)
 								mAdapter = null;
 							unpackResults(mResults);
+							runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									mLoadingNewSearchIcon.setVisibility(View.GONE);
+								}
+							});
 						} catch (JSONException e) {
 							e.printStackTrace();
 						}
@@ -485,6 +495,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 	public void newSearch(View v) {
 		Log.d(TAG, "Search");
+		mFilterOptionsLayout.setVisibility(View.GONE);
 		String searchQuery = mSearchBox.getText().toString();
 		String url = "";
 		if (searchQuery.length() > 0) {

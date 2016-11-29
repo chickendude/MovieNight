@@ -333,4 +333,12 @@
 		android:layout_toStartOf="@+id/attributionLabel"
 		app:srcCompat="@mipmap/tmdb"/>
 
+	<ProgressBar
+		android:id="@+id/loadingNewSearchIcon"
+		style="?android:attr/progressBarStyleLarge"
+		android:background="@drawable/loader"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerInParent="true"/>
+
 </RelativeLayout>
